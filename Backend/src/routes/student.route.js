@@ -4,7 +4,7 @@ import {registerStudent} from "../controllers/student.controller.js"
 
 
 export const studentRouter = Router();
-userRouter.route("/register").post(
+studentRouter.route("/register").post(
     upload.single({
         name: "profile_image",
         maxCount: 1,

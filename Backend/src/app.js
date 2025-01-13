@@ -3,7 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import {upload} from "../src/middlewares/multer.js";
 export const app =express();
-
+import {studentRouter} from "../src/routes/student.route.js"
 app.use(cookieParser());
 app.use(express.json({limit: "30mb", extended: true}));
 app.use(express.urlencoded({limit: "30mb", extended: true}));
@@ -14,7 +14,7 @@ app.use(express.static("public"))
 
 
 //routes
-
+app.use('/api/v1/student',studentRouter);
 
 
 
