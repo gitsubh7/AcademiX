@@ -82,4 +82,11 @@ const studentSchema = new mongoose.Schema(
   }
 );
 
+studentSchema.pre("save", async function (next) {
+  const student = this;
+  if (student.isModified("password")) {
+    student.password = await bcrypt.hash(student.password, 8);
+  }
+  next();
+});
 export const Student = mongoose.model("Student", studentSchema);
