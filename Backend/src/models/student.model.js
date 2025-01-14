@@ -18,7 +18,7 @@ const studentSchema = new mongoose.Schema(
       required: true,
       enum: ["B.Tech", "M.Tech", "MCA", "PhD"],
     },
-    branch: {
+    department: {
       type: String,
       required: true,
       enum: [
