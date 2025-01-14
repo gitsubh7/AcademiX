@@ -12,32 +12,29 @@ function isValidNitpEmail(email) {
     return emailRegex.test(email);
   }
 export const registerStudent=asyncHandler(async(req,res,next)=>{
-    const {name,email,degree,department,password,roll_number,bio,year,passout_year,phone_number}=req.body;
+    const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
     if(!isValidNitpEmail(email)){
-        return new apiError(400,"Invalid Email, use NITP email-address");
+        throw new apiError(400,"Invalid Email, use NITP email-address");
     }
-    const {subjects_enrolled} = req.body;
-
-    console.log(subjects_enrolled);
-    console.log(typeof subjects_enrolled);
-    
-    
+    const {subjects_enrolled} = req.body;    
+    const image_url = req.file.path
+    if(!image_url) throw new apiError(400,"Please upload an image");
+    // console.log(req.body);
     if (!name ||!email ||!degree ||!department || !section ||!password ||!roll_number || !subjects_enrolled ||!year ||!passout_year ||!phone_number) {
-        return new apiError(400,"Please fill in all Mandatory fields"); 
+        throw new apiError(400,"Please fill in all Mandatory fields"); 
       }
       
     //checking if student exists
     const studentExists = await Student.findOne({email:email})
     if(studentExists){
-    return new apiError(400,"Student already exists");
+    throw new apiError(400,"Student already exists");
     }
     //handle  user imagee
-    const image_url = req.files?.image_url[0]?.path
-    if(!image_url) return new apiError(400,"Please upload an image");
+    
     const cloudinary_img= await uploadToCloudinary(image_url);
-    if(!cloudinary_img) return new apiError(500,"Error uploading image");
+    if(!cloudinary_img) throw new apiError(500,"Error uploading image");
 
-    const newStudent = await User.create({
+    const newStudent = await Student.create({
     name,
     email,
     degree,
@@ -52,10 +49,10 @@ export const registerStudent=asyncHandler(async(req,res,next)=>{
     passout_year,
     phone_number,
     })
-    const createdStudent = await User.findById(newStudent._id).select("-password -refreshToken");
-    if(!createdStudent) return new apiError(500,"Error creating student ");
+    const createdStudent = await Student.findById(newStudent._id).select("-password -refreshToken");
+    if(!createdStudent) throw new apiError(500,"Error creating student ");
 
-    return new apiResponse(201,createdStudent,"Student created successfully");
+    res.status(201).json(new apiResponse(201,"Student created successfully",createdStudent));
 
 
 

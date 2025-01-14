@@ -9,11 +9,14 @@ cloudinary.config({
 
 export const uploadToCloudinary=async (file)=>{
     try {
-        if(!file) return nulll
-        const res = await cloudinary.uploader.upload(file,{resource_type:"auto"})
+        if(!file) return null;
+        console.log(file)
+        const res = await cloudinary.uploader.upload(file,{
+            folder:"NITP-Student-Portal",
+        })
         console.log("FILE UPLOADED",res.url);
         fs.unlinkSync(file)
-        return res;
+        return res.url;
          
     } catch (error) {
         fs.unlinkSync(file)

@@ -5,7 +5,7 @@ class apiError extends Error{
         }
         super(message);
         this.statusCode = statusCode;
-        this.errors = Arrays.isArray(errors)?errors:[errors];
+        this.errors = Array.isArray(errors)?errors:[errors];
         if(stack) this.stack=stack
     }
 
