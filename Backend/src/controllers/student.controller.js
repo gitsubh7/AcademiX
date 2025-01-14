@@ -10,8 +10,23 @@ import {Attendance} from "../models/attendance.model.js"
 function isValidNitpEmail(email) {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@nitp\.ac\.in$/;
     return emailRegex.test(email);
-  }
-  export const registerStudent=asyncHandler(async(req,res,next)=>{
+}
+
+const generateAccessAndRefreshToken = async(studentId)=>{
+    try {
+      const student = await Student.findById(studentId);
+      if(!student) throw new apiError(404,"Student not found");
+      const at = student.generateAccessToken();
+      const rt = student.generateRefreshToken();
+      student.refreshToken = rt;
+      await student.save({validateBeforeSave:false});
+      return {at,rt};
+    } catch (error) {
+      throw new apiError(500,"Error generating tokens");
+    }
+}
+
+export const registerStudent=asyncHandler(async(req,res,next)=>{
       const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
       if(!isValidNitpEmail(email)){
           throw new apiError(400,"Invalid Email, use NITP email-address");
@@ -69,16 +84,51 @@ function isValidNitpEmail(email) {
 
 
       
-  })
+})
+
+export const loginStudent = asyncHandler(async(req,res,next)=>{
+  const {email,password}=req.body;
+  if(!email) throw new apiError(400,"Please provide email");
+  if(!password) throw new apiError(400,"Please provide password");
+  const student = await Student.findOne({email:email});
+  if(!student) throw new apiError(404,"Student not found");
+  const isPasswordCorrect = await student.isPasswordCorrect(password);
+  if(!isPasswordCorrect) throw new apiError(400,"Please enter correct password");
+  const {at,rt}=await generateAccessAndRefreshToken(student._id);
+  const loggedInStudent = await Student.findById(student._id).select("-password -refreshToken");
+  console.log(at);
+  console.log(rt);
+  
+  
+  const options={
+    httpOnly:true,
+    secure:true,
+  }
+  return res.status(200)
+  .cookie("accesstoken",at,options)
+  .cookie("refreshtoken",rt,options)
+  .json(new apiResponse(200,{user:loggedInStudent,accessToken:at,refreshToken:rt},"Login successful"));
 
 
-//login 
+})
+
+export const logoutStudent = asyncHandler(async(req,res,next)=>{
+  await Student.findByIdAndUpdate(req.user._id,{
+    $set:{
+      refreshToken:undefined
+    }},
+    {new:true})
+  const options={
+    httpOnly:true,
+    secure:true
+  }
+  res.status(200)
+  .clearCookie("accessToken",options)
+  .clearCookie("refreshToken",options)
+  .json(new apiResponse(200,{},"User logged out successfully"))
 
 
-//logout
-
-
-
+})
 //change password
 
 
