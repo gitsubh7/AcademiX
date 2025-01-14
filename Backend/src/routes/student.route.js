@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {upload} from "../middlewares/multer.js"
-import {registerStudent,markAbsent,markPresent} from "../controllers/student.controller.js"
-import { get } from "mongoose";
+import {registerStudent,markAbsent,markPresent,getAttendance} from "../controllers/student.controller.js"
+
 
 
 export const studentRouter = Router();
@@ -13,3 +13,4 @@ studentRouter.route("/register").post(
 
 studentRouter.route("/markAbsent").post(markAbsent)
 studentRouter.route("/markPresent").post(markPresent)   
+studentRouter.route("/getAttendance").get(getAttendance)

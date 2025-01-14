@@ -85,9 +85,6 @@ function isValidNitpEmail(email) {
 //update details
 
 
-//get attendance information
-
-
 
 //mark absent
 
@@ -111,6 +108,17 @@ export const markPresent =asyncHandler(async(req,res,next)=>{
   res.status(200).json(new apiResponse(200,"Present marked successfully",attendance))
 })
 
+
+//get attendance
+export const getAttendance =asyncHandler(async(req,res,next)=>{
+  const {roll_number}=req.body
+  console.log(roll_number);
+  
+  if(!roll_number) throw new apiError(400,"Please provide roll number");
+  const attendance = await Attendance.find({roll_number:roll_number}).select("subject_code present absent total percentage");
+  if(!attendance) throw new apiError(404,"Attendance not found");
+  res.status(200).json(new apiResponse(200,"Attendance fetched successfully",attendance))
+})
 
 
 
