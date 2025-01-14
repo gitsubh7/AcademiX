@@ -16,14 +16,7 @@ export const registerStudent=asyncHandler(async(req,res,next)=>{
     if(!isValidNitpEmail(email)){
         return new apiError(400,"Invalid Email, use NITP email-address");
     }
-    const subjects_enrolled = Array.isArray(req.body.subjects_enrolled)
-    ? req.body.subjects_enrolled
-    : JSON.parse(req.body.subjects_enrolled );
-
-    // Validate the array
-    if (!Array.isArray(subjects_enrolled) || subjects_enrolled.length === 0) {
-    return next(new apiError(400, "Please provide at least one subject in subjects_enrolled."));
-    }
+    const {subjects_enrolled} = req.body;
 
     console.log(subjects_enrolled);
     console.log(typeof subjects_enrolled);
