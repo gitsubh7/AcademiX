@@ -6,7 +6,11 @@ import {uploadToCloudinary} from "../utils/cloudinary.js"
 import {Attendance} from "../models/attendance.model.js"
 import {isValidNitpEmail} from "../utils/emailAuth.js"
 import {generateAccessAndRefreshToken} from "../utils/access-refresh.js"
+import nodemailer from "nodemailer"
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
 
+const port = process.env.PORT || 5000
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
       const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
@@ -125,6 +129,85 @@ export const updateStudent=asyncHandler(async(req,res,next)=>{
 })
 
 //change password
+export const changePassword = asyncHandler(async(req,res,next)=>{
+  const studentId = req.user._id
+  const {old_password,new_password}=req.body;
+  if(!old_password || !new_password) throw new apiError(400,"Please provide old and new password");
+  const student = await Student.findById(studentId);
+  if(!student) throw new apiError(404,"Student not found");
+  const isPasswordCorrect = await student.isPasswordCorrect(old_password);
+  if(!isPasswordCorrect) throw new apiError(400,"Please enter correct old password");
+  student.password=new_password;
+  await student.save();
+  res.status(200).json(new apiResponse(200,"Password changed successfully",student));
+})
+//forget password
+export const requestPasswordReset=asyncHandler(async(req,res,next)=>{
+  const {email}= req.body
+  const student =await  Student.findOne({email:email})
+  if(!student) throw new apiError(404,"Student not found");
+  const secret = process.env.JWT + student.password
+  const token = jwt.sign({
+    id:student._id,
+    email:student.email,
+  },secret,{expiresIn:'1h'})
+
+  const host = req.get('host'); // Dynamically retrieves the host
+  const resetURL = `${req.protocol}://${host}/api/v1/student/passwordReset?id=${student._id}&token=${token}`;
+
+    
+  const transporter= nodemailer.createTransport({
+    service:"gmail",
+    auth:{
+     user:process.env.EMAIL,
+     pass:process.env.PASSWORD
+    }
+  })
+  await transporter.verify().then(() => {
+    console.log("Transporter verified successfully!");
+  }).catch(error => {
+    console.error("Error verifying transporter:", error);
+  });
+  
+  
+  const mailOption = {
+    to:student.email,
+    from :process.env.EMAIL,
+    subject:"ACADEMIX - Password Reset Request",
+    text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+      Please click on the following link, or paste this into your browser to complete the process:\n\n
+      ${resetURL}\n\n
+      If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+  }
+  await transporter.sendMail(mailOption);
+  res.status(200).json(new apiResponse(200,"Password reset link sent to email"));
+  
+
+})
+export const passwordReset = asyncHandler(async(req,res,next)=>{
+  const {id,token}=req.query
+  const {password}=req.body
+  console.log(id);
+  
+  const student = await Student.findOne({
+    _id:id
+  })
+  if(!student) throw new apiError(404,"Student not found"); 
+  const secret = process.env.JWT + student.password
+  const verify = jwt.verify(token,secret)
+  if(!verify) throw new apiError(400,"Invalid or expired token");
+  const encrpytedPassword = await bcrypt.hash(password,10);
+  await Student.findByIdAndUpdate(id,{
+    password:encrpytedPassword
+  })
+  res.status(200).json(new apiResponse(200,"Password reset successfully"));
+})
+
+
+
+
+
+
 
 
 export const updateProfileImage = asyncHandler(async(req,res,next)=>{

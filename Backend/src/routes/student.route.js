@@ -2,19 +2,37 @@ import { Router } from "express";
 import {upload} from "../middlewares/multer.js"
 import {registerStudent,loginStudent,logoutStudent, updateStudent, updateProfileImage,markAbsent,markPresent,getAttendance,removeCourse,editCourse,addCourse} from "../controllers/student.controller.js"
 import {verifyJWT} from "../middlewares/auth.js"
+import { changePassword,requestPasswordReset,passwordReset } from "../controllers/student.controller.js"
+
 
 export const studentRouter = Router();
 studentRouter.route("/register").post(
     upload.single("image_url"),registerStudent
 )
+
+
+//login,logout
 studentRouter.route("/login").post(loginStudent)
 studentRouter.route('/logout').post(verifyJWT,logoutStudent)
+
+
+//update student routes
 studentRouter.route("/updateStudent").post(verifyJWT,updateStudent)
 studentRouter.route("/updateProfileImage").post(verifyJWT,upload.single("image_url"),updateProfileImage)
+
+
+//course routes
 studentRouter.route("/addCourse").post(verifyJWT,addCourse)
 studentRouter.route("/editCourse").post(verifyJWT,editCourse)
 studentRouter.route("/removeCourse").post(verifyJWT,removeCourse)
-// studentRouter.route("/changePassword").post(changePassword)
+
+//password routes
+studentRouter.route("/requestPasswordReset").post(requestPasswordReset)
+studentRouter.route("/passwordReset").post(passwordReset)
+studentRouter.route("/changePassword").post(verifyJWT,changePassword)
+
+
+//attendance routes
 studentRouter.route("/markAbsent").post(markAbsent)
 studentRouter.route("/markPresent").post(markPresent)   
 studentRouter.route("/getAttendance").get(getAttendance)
