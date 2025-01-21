@@ -301,9 +301,6 @@ export const getAttendance =asyncHandler(async(req,res,next)=>{
 })
 
 
-
-
-
 export const getGithubProfile = asyncHandler(async (req, res, next) => {
   const { username } = req.params;
   const url = `https://api.github.com/users/${username}`;
@@ -338,3 +335,17 @@ export const getGithubProfile = asyncHandler(async (req, res, next) => {
     res.status(200).json(new apiResponse(200, "GitHub profile fetched successfully", profile));
   
 });
+export const getCodeforcesProfile=asyncHandler(async(req,res,next)=>{
+  const {username} = req.params
+  const url = `https://codeforces.com/api/user.info?handles=${username}`
+  const response = (await axios.get(url)).data.result[0];
+  const profile = {
+    username: response.handle,
+    rating: response.rating,
+    maxRating: response.maxRating,
+    rank: response.rank,
+    maxRank: response.maxRank,
+  }
+  
+  res.status(200).json(new apiResponse(200,"Codeforces profile fetched successfully",profile));
+})
