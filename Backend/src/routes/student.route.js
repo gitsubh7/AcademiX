@@ -3,7 +3,7 @@ import {upload} from "../middlewares/multer.js"
 import {registerStudent,loginStudent,logoutStudent, updateStudent, updateProfileImage,markAbsent,markPresent,getAttendance,removeCourse,editCourse,addCourse} from "../controllers/student.controller.js"
 import {verifyJWT} from "../middlewares/auth.js"
 import { changePassword,requestPasswordReset,passwordReset } from "../controllers/student.controller.js"
-
+import {getGithubProfile} from "../controllers/student.controller.js"
 
 export const studentRouter = Router();
 studentRouter.route("/register").post(
@@ -36,3 +36,8 @@ studentRouter.route("/changePassword").post(verifyJWT,changePassword)
 studentRouter.route("/markAbsent").post(markAbsent)
 studentRouter.route("/markPresent").post(markPresent)   
 studentRouter.route("/getAttendance").get(getAttendance)
+
+
+
+//coding profile routes
+studentRouter.route("/github/:username").get(getGithubProfile)

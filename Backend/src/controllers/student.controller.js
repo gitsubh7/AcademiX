@@ -9,8 +9,7 @@ import {generateAccessAndRefreshToken} from "../utils/access-refresh.js"
 import nodemailer from "nodemailer"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
-
-const port = process.env.PORT || 5000
+import axios from "axios"
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
       const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
@@ -128,7 +127,6 @@ export const updateStudent=asyncHandler(async(req,res,next)=>{
 
 })
 
-//change password
 export const changePassword = asyncHandler(async(req,res,next)=>{
   const studentId = req.user._id
   const {old_password,new_password}=req.body;
@@ -141,7 +139,7 @@ export const changePassword = asyncHandler(async(req,res,next)=>{
   await student.save();
   res.status(200).json(new apiResponse(200,"Password changed successfully",student));
 })
-//forget password
+
 export const requestPasswordReset=asyncHandler(async(req,res,next)=>{
   const {email}= req.body
   const student =await  Student.findOne({email:email})
@@ -202,13 +200,6 @@ export const passwordReset = asyncHandler(async(req,res,next)=>{
   })
   res.status(200).json(new apiResponse(200,"Password reset successfully"));
 })
-
-
-
-
-
-
-
 
 export const updateProfileImage = asyncHandler(async(req,res,next)=>{
   const studentId = req.user._id
@@ -312,3 +303,38 @@ export const getAttendance =asyncHandler(async(req,res,next)=>{
 
 
 
+
+export const getGithubProfile = asyncHandler(async (req, res, next) => {
+  const { username } = req.params;
+  const url = `https://api.github.com/users/${username}`;
+
+    const response = await axios.get(url);
+    if (!response.data) throw new apiError(404, "GitHub profile not found");
+
+
+    const reposResponse = await axios.get(response.data.repos_url);
+    const repositories = reposResponse.data;
+
+    let commits = 0;
+
+    for (const repo of repositories) {
+      try {
+        const commitResponse = await axios.get(`https://api.github.com/repos/${username}/${repo.name}/commits`);
+        commits += commitResponse.data.length;
+      } catch (err) {
+        console.error(`Error fetching commits for repo: ${repo.name}`);
+      }
+    }
+    const profile = {
+      username: response.data.login,
+      name: response.data.name,
+      bio: response.data.bio,
+      followers: response.data.followers,
+      following: response.data.following,
+      public_repos: response.data.public_repos,
+      commits: commits,
+    };
+
+    res.status(200).json(new apiResponse(200, "GitHub profile fetched successfully", profile));
+  
+});
