@@ -4,7 +4,8 @@ import {registerStudent,loginStudent,logoutStudent, updateStudent, updateProfile
 import {verifyJWT} from "../middlewares/auth.js"
 import { changePassword,requestPasswordReset,passwordReset } from "../controllers/student.controller.js"
 import {getGithubProfile,getCodeforcesProfile} from "../controllers/student.controller.js"
-
+import {googleAuth,redirectGoogleAuth} from "../controllers/student.controller.js"
+import {addClass} from "../controllers/student.controller.js"
 export const studentRouter = Router();
 studentRouter.route("/register").post(
     upload.single("image_url"),registerStudent
@@ -42,3 +43,8 @@ studentRouter.route("/getAttendance").get(getAttendance)
 //coding profile routes
 studentRouter.route("/github/:username").get(getGithubProfile)
 studentRouter.route("/codeforces/:username").get(getCodeforcesProfile)
+
+//adding class to router
+studentRouter.route("/google").get(googleAuth)
+studentRouter.route("/google/redirect").get(redirectGoogleAuth)
+studentRouter.route("/addClass").get(addClass)

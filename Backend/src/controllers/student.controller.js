@@ -6,10 +6,16 @@ import {uploadToCloudinary} from "../utils/cloudinary.js"
 import {Attendance} from "../models/attendance.model.js"
 import {isValidNitpEmail} from "../utils/emailAuth.js"
 import {generateAccessAndRefreshToken} from "../utils/access-refresh.js"
+import { addEventToGoogleCalendar } from "../utils/addEventToGoogleCalendar.js";
 import nodemailer from "nodemailer"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import axios from "axios"
+import {Class} from "../models/class.model.js"
+import { User } from "../models/user.model.js";
+import { google } from "googleapis";
+import { oauth2 } from "googleapis/build/src/apis/oauth2/index.js";
+
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
       const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
@@ -348,4 +354,114 @@ export const getCodeforcesProfile=asyncHandler(async(req,res,next)=>{
   }
   
   res.status(200).json(new apiResponse(200,"Codeforces profile fetched successfully",profile));
+})
+
+
+export const googleAuth = asyncHandler(async (req, res, next) => {
+  const auth2Client = new google.auth.OAuth2({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: process.env.GOOGLE_REDIRECT_URI,
+  });
+
+  const scopes = [
+    'https://www.googleapis.com/auth/calendar',
+  ];
+
+  const url = auth2Client.generateAuthUrl({
+    access_type: "offline", // This gives you the refresh token.
+    scope: scopes,
+  });
+
+  res.redirect(url);
+});
+
+export const redirectGoogleAuth = asyncHandler(async (req, res, next) => {
+  const auth2Client = new google.auth.OAuth2({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: process.env.GOOGLE_REDIRECT_URI,
+  });
+
+  const { code } = req.query;
+  if (!code) {
+    return res.status(400).json({ error: "Authorization code is missing from the query." });
+  }
+
+  // Get tokens using the authorization code
+  const { tokens } = await auth2Client.getToken(code);
+
+  console.log('Tokens:', tokens);
+
+  // Respond with the tokens (access_token and refresh_token)
+  res.status(200).json({
+    message: "Google authentication successful",
+    tokens,
+  });
+});
+
+
+export const addClass = asyncHandler(async (req, res, next) => {
+
+  const accessToken = req.headers['authorization']?.split(' ')[1]; 
+  // const refreshToken = req.headers['x-refresh-token'];  // Refresh token in custom header 'x-refresh-token'
+
+  if (!accessToken) {
+    return res.status(401).json({ error: "User is not authenticated. Please log in first." });
+  }
+  const auth2Client = new google.auth.OAuth2({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: process.env.GOOGLE_REDIRECT_URI,
+  });
+
+  
+  auth2Client.setCredentials({
+    access_token: accessToken
+    // refresh_token: refreshToken,
+  });
+
+  
+  console.log(auth2Client.credentials.access_token);
+
+  const calendar = google.calendar({ version: 'v3', auth: auth2Client });
+  const { subject_code, subject_name, day, classroom, professor_name, start_time, end_time } = req.body;
+
+
+  // Calculate the 'UNTIL' date for 6 months from the start time
+  const startDate = new Date(start_time);
+  const untilDate = new Date(startDate);
+  untilDate.setMonth(untilDate.getMonth() + 6); // Set the date 6 months ahead
+  const untilString = untilDate.toISOString().replace(/[-:.]/g, '').split('T')[0] + 'T000000Z'; // Format in YYYYMMDDTHHMMSSZ
+
+  // Construct the event summary and description
+  const eventSummary = `${subject_code}: ${subject_name}`;
+  const eventDescription = `Classroom: ${classroom}\nProfessor: ${professor_name}`;
+
+  await calendar.events.insert({
+    calendarId: 'primary',
+    auth: auth2Client,
+    requestBody: {
+      summary: eventSummary,
+      description: eventDescription,
+      location: classroom,
+      organizer: {
+        displayName: professor_name,
+        // email: professor_email, // You'll need to provide the professor's email
+      },
+      start: {
+        dateTime: start_time,
+        timeZone: 'Asia/Kolkata',
+      },
+      end: {
+        dateTime: end_time,
+        timeZone: 'Asia/Kolkata',
+      },
+      recurrence: [
+        `RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=${untilString}`,
+      ],
+    },
+  });
+
+  res.send({ message: "Event added successfully" });
 })
