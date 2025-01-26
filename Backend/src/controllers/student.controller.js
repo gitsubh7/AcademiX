@@ -6,16 +6,13 @@ import {uploadToCloudinary} from "../utils/cloudinary.js"
 import {Attendance} from "../models/attendance.model.js"
 import {isValidNitpEmail} from "../utils/emailAuth.js"
 import {generateAccessAndRefreshToken} from "../utils/access-refresh.js"
-import { addEventToGoogleCalendar } from "../utils/addEventToGoogleCalendar.js";
 import nodemailer from "nodemailer"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import axios from "axios"
-import {Class} from "../models/class.model.js"
-import { User } from "../models/user.model.js";
 import { google } from "googleapis";
-import { oauth2 } from "googleapis/build/src/apis/oauth2/index.js";
-
+import { formatData } from "../utils/leetcodedataformat.js";
+import { query } from "../utils/leetcodegraphQL.js";
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
       const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
@@ -357,6 +354,43 @@ export const getCodeforcesProfile=asyncHandler(async(req,res,next)=>{
 })
 
 
+export const getLeetCodeProfile = asyncHandler(async (req, res, next) => {
+  const { username } = req.params;
+  const result = await axios.post(
+    'https://leetcode.com/graphql',
+    {
+      query,
+      variables: { username },
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Referer: 'https://leetcode.com/',
+      },
+    }
+  );
+
+  if (!result.data) throw new apiError(404, "LeetCode profile not found");
+
+  const profile = formatData(result.data.data);
+  res.status(200).json(new apiResponse(200, "LeetCode profile fetched successfully", profile));
+  
+});
+
+
+export const getGFGProfile= asyncHandler(async(req,res,next)=>{
+  const {username}=req.params
+})
+
+
+export const getCodeChefProfile= asyncHandler(async(req,res,next)=>{
+  const {username}=req.params
+})
+
+
+
+
+
 export const googleAuth = asyncHandler(async (req, res, next) => {
   const auth2Client = new google.auth.OAuth2({
     clientId: process.env.GOOGLE_CLIENT_ID,
@@ -465,3 +499,5 @@ export const addClass = asyncHandler(async (req, res, next) => {
 
   res.send({ message: "Event added successfully" });
 })
+
+
