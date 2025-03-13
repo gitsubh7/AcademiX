@@ -3,7 +3,7 @@ import {upload} from "../middlewares/multer.js"
 import {registerStudent,loginStudent,logoutStudent, updateStudent, updateProfileImage,markAbsent,markPresent,getAttendance,removeCourse,editCourse,addCourse} from "../controllers/student.controller.js"
 import {verifyJWT} from "../middlewares/auth.js"
 import { changePassword,requestPasswordReset,passwordReset } from "../controllers/student.controller.js"
-import {getGithubProfile,getCodeforcesProfile,getCodeChefProfile,getGFGProfile,getLeetCodeProfile} from "../controllers/student.controller.js"
+import {getGithubProfile,getCodeforcesProfile,getLeetCodeProfile} from "../controllers/student.controller.js"
 import {googleAuth,redirectGoogleAuth} from "../controllers/student.controller.js"
 import {addClass} from "../controllers/student.controller.js"
 export const studentRouter = Router();
@@ -44,8 +44,6 @@ studentRouter.route("/getAttendance").get(getAttendance)
 studentRouter.route("/github/:username").get(getGithubProfile)
 studentRouter.route("/codeforces/:username").get(getCodeforcesProfile)
 studentRouter.route("/leetcode/:username").get(getLeetCodeProfile);
-studentRouter.route("/gfg/:username").get(getGFGProfile);
-studentRouter.route("/codechef/:username").get(getCodeChefProfile);
 
 //adding class to router
 studentRouter.route("/google").get(googleAuth)

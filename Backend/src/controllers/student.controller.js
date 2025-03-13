@@ -378,16 +378,6 @@ export const getLeetCodeProfile = asyncHandler(async (req, res, next) => {
 });
 
 
-export const getGFGProfile= asyncHandler(async(req,res,next)=>{
-  const {username}=req.params
-})
-
-
-export const getCodeChefProfile= asyncHandler(async(req,res,next)=>{
-  const {username}=req.params
-})
-
-
 
 
 
