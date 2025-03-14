@@ -6,15 +6,15 @@ AcademiX is a comprehensive student dashboard application designed to streamline
 
 ## Table of Contents
 
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Project Structure](#project-structure)
-- [Setup Instructions](#setup-instructions)
-  - [Frontend](#frontend-setup)
-  - [Backend](#backend-setup)
-  - [ML Module](#ml-module-setup)
-- [API Endpoints](#api-endpoints)
-- [License](#license)
+- Features
+- Technologies Used
+- Project Structure
+- Setup Instructions
+  - Frontend
+  - Backend
+  - ML Module
+- API Endpoints
+- License
 
 ---
 
@@ -64,6 +64,40 @@ AcademiX is a comprehensive student dashboard application designed to streamline
 
 ## Project Structure
 
-AcademiX/ ├── Backend/ │ ├── public/ # Static files │ ├── src/ │ │ ├── controllers/ # API controllers │ │ ├── middlewares/ # Middleware functions │ │ ├── models/ # Mongoose models │ │ ├── routes/ # API routes │ │ ├── utils/ # Utility functions │ │ ├── app.js # Express app setup │ │ ├── index.js # Entry point │ │ └── constants.js # Constants │ └── package.json # Backend dependencies ├── Frontend/ │ ├── src/ │ │ ├── App.jsx # Main React component │ │ ├── main.jsx # React entry point │ │ ├── index.css # Global styles │ │ └── App.css # Component-specific styles │ └── package.json # Frontend dependencies ├── ML/ │ ├── face_recog.py # Face recognition API │ ├── requirements.txt # Python dependencies │ └── .gitignore # Ignored files └── README.md # Project documentation
+AcademiX/
+├── Backend/
+│   ├── public/               # Static files
+│   ├── src/
+│   │   ├── controllers/      # API controllers
+│   │   ├── middlewares/      # Middleware functions
+│   │   ├── models/           # Mongoose models
+│   │   ├── routes/           # API routes
+│   │   ├── utils/            # Utility functions
+│   │   ├── app.js            # Express app setup
+│   │   ├── index.js          # Entry point
+│   │   └── constants.js      # Constants
+│   └── package.json          # Backend dependencies
+├── Frontend/
+│   ├── src/
+│   │   ├── App.jsx           # Main React component
+│   │   ├── main.jsx          # React entry point
+│   │   ├── index.css         # Global styles
+│   │   └── App.css           # Component-specific styles
+│   └── package.json          # Frontend dependencies
+├── ML/
+│   ├── face_recog.py         # Face recognition API
+│   ├── requirements.txt      # Python dependencies
+│   └── .gitignore            # Ignored files
+└── README.md                 # Project documentation
 
+---
+
+## Setup Instructions
+
+### Prerequisites
+- Node.js (v16+)
+- Python (v3.8+)
+- MongoDB
+- npm or yarn
+- Virtual environment for Python
 
