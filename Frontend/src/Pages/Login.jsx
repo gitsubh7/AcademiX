@@ -1,5 +1,4 @@
 import React from "react";
-import v1 from "../assets/v1.png";
 import logo from "../assets/logo.png";
 
 const Login = () => {
