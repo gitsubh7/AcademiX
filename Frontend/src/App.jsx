@@ -1,14 +1,27 @@
 import React from "react";
-import Login from "./Pages/Login.jsx";
-import SignUp from "./Pages/SignUp.jsx";
+import { Routes, Route } from "react-router-dom";
+import Login from "./login/Login.jsx";
+import SignUp from "./register/SignUp.jsx";
+import Home from "./home/Home.jsx";
+import ForgotPass from "./forgot-password/page.jsx";
+import ResetPass from "./passwordReset/page.jsx";
 
-function App() {
+export default function App() {
   return (
-      <SignUp/>
-  );
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<SignUp />} />
+      <Route path="/forgot-password" element={<ForgotPass />} />
+      <Route path="/api/v1/student/passwordReset" element={<ResetPass />} />
+    </Routes>
+  );  
 }
 
-export default App;
+
+
+
+
 
 
 

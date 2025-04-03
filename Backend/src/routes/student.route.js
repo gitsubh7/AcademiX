@@ -11,7 +11,6 @@ studentRouter.route("/register").post(
     upload.single("image_url"),registerStudent
 )
 
-
 //login,logout
 studentRouter.route("/login").post(loginStudent)
 studentRouter.route('/logout').post(verifyJWT,logoutStudent)
