@@ -153,8 +153,11 @@ export const requestPasswordReset=asyncHandler(async(req,res,next)=>{
     email:student.email,
   },secret,{expiresIn:'1h'})
 
-  // const host = req.get('host'); // Dynamically retrieves the host
-  const resetURL = `http://localhost:3001/api/v1/student/passwordReset?id=${student._id}&token=${token}`;
+  const host = req.get('host'); // Dynamically retrieves the host
+  if(!host) throw new apiError(400,"Host not found");
+  console.log(host);
+  const resetURL = `${req.protocol}://${host}/api/v1/student/passwordReset?id=${student._id}&token=${token}`;
+  console.log(resetURL);
   const transporter= nodemailer.createTransport({
     service:"gmail",
     auth:{

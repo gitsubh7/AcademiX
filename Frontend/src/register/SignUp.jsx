@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {useUserContext} from "../context/userContext.jsx";
 import v2 from "../assets/v2.png";
-import logo from "../assets/logo.png";
+import logo from "../assets/Logo.png";
 
 const SignUp = () => {
   const navigate = useNavigate();

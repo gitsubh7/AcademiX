@@ -9,12 +9,11 @@ import { weatherRouter } from "../src/routes/weather.route.js"
 app.use(cookieParser());
 app.use(express.json({limit: "30mb", extended: true}));
 app.use(express.urlencoded({limit: "30mb", extended: true}));
-app.use(
-    cors({
-      origin: "http://localhost:3001", // Allow frontend domain
-      credentials: true, // Allow cookies/auth headers
-    })
-  );
+app.use(cors({
+    origin: '*',
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}));
 app.use(express.static("public"))
 
 
