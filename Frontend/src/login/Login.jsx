@@ -49,7 +49,7 @@ const Login = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlerUserInput("password")}
                 id="password"
                 placeholder="*********"
                 className="w-full p-3 border border-gray-400 rounded-lg text-[0.9rem] md:text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
