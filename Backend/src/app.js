@@ -1,9 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import {upload} from "../src/middlewares/multer.js";
 export const app =express();
-import passport from "passport";
+
 import {studentRouter} from "../src/routes/student.route.js"
 import { weatherRouter } from "../src/routes/weather.route.js"
 app.use(cookieParser());

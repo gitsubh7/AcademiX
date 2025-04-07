@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
 const studentSchema = new mongoose.Schema(
   {
     name: {
@@ -80,7 +81,20 @@ const studentSchema = new mongoose.Schema(
     refreshToken:{
       type:String,
   
-    }
+    },
+    documents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Document",
+      },
+    ],
+    attendance: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Attendance",
+      },
+    ],
+    
   },
   {
     timestamps: true, 

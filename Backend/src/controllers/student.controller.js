@@ -13,6 +13,7 @@ import axios from "axios"
 import { google } from "googleapis";
 import { formatData } from "../utils/leetcodedataformat.js";
 import { query } from "../utils/leetcodegraphQL.js";
+import { Document } from "../models/documents.model.js";
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
   const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
@@ -493,3 +494,42 @@ export const addClass = asyncHandler(async (req, res, next) => {
 })
 
 
+export const  uploadDocument = asyncHandler(async(req,res,next)=>{
+  const studentId = req.user._id
+  console.log(studentId);
+  if(!req.file) throw new apiError(400,"Please upload a document");
+  const uploadedDocument = req.file.path;
+  console.log(uploadedDocument);
+  
+  const cloudinary_img= await uploadToCloudinary(uploadedDocument);
+  if(!cloudinary_img) throw new apiError(500,"Error uploading document");
+  
+  const document = await Document.create({
+    name:req.body.name,
+    url:cloudinary_img
+  })
+  
+  const student = await Student.findByIdAndUpdate(studentId,{
+    $push:{
+      documents:document._id
+    }
+  },{new:true}).select("-password -refreshToken");
+  if(!student) throw new apiError(500,"Error updating student");
+  res.status(200).json(new apiResponse(200,"Document added successfully",student));
+  
+})
+export const getAllDocuments = asyncHandler(async(req,res,next)=>{
+  const studentId = req.user._id
+  const student = await Student.findById(studentId).populate("documents");
+  if(!student) throw new apiError(404,"Student not found");
+  const documents = student.documents;
+  if(!documents) throw new apiError(404,"Documents not found");
+  const documentToSend = {
+    documents:documents.map((doc)=>({
+      name:doc.name,
+      url:doc.url
+    }))
+  }
+  res.status(200).json(new apiResponse(200,"Documents fetched successfully",documentToSend));
+  
+})

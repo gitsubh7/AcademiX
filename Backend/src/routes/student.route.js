@@ -6,6 +6,9 @@ import { changePassword,requestPasswordReset,passwordReset } from "../controller
 import {getGithubProfile,getCodeforcesProfile,getLeetCodeProfile} from "../controllers/student.controller.js"
 import {googleAuth,redirectGoogleAuth} from "../controllers/student.controller.js"
 import {addClass} from "../controllers/student.controller.js"
+import {uploadDocument} from "../controllers/student.controller.js"
+import { getAllDocuments } from "../controllers/student.controller.js";
+
 export const studentRouter = Router();
 studentRouter.route("/register").post(
     upload.single("image_url"),registerStudent
@@ -48,3 +51,8 @@ studentRouter.route("/leetcode/:username").get(getLeetCodeProfile);
 studentRouter.route("/google").get(googleAuth)
 studentRouter.route("/google/redirect").get(redirectGoogleAuth)
 studentRouter.route("/addClass").get(addClass)
+
+
+//document routes
+studentRouter.route("/uploadDocument").post(verifyJWT,upload.single("localDocument"),uploadDocument)
+studentRouter.route("/getAllDocuments").get(verifyJWT,getAllDocuments)  
