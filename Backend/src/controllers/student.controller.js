@@ -14,6 +14,8 @@ import { google } from "googleapis";
 import { formatData } from "../utils/leetcodedataformat.js";
 import { query } from "../utils/leetcodegraphQL.js";
 import { Document } from "../models/documents.model.js";
+import {extractPublicId} from "cloudinary-build-url"
+import  cloudinary  from "cloudinary"
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
   const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
@@ -526,6 +528,7 @@ export const getAllDocuments = asyncHandler(async(req,res,next)=>{
   if(!documents) throw new apiError(404,"Documents not found");
   const documentToSend = {
     documents:documents.map((doc)=>({
+      id:doc._id,
       name:doc.name,
       url:doc.url
     }))
@@ -533,3 +536,38 @@ export const getAllDocuments = asyncHandler(async(req,res,next)=>{
   res.status(200).json(new apiResponse(200,"Documents fetched successfully",documentToSend));
   
 })
+
+export const deleteDocument = asyncHandler(async (req, res, next) => {
+  const studentId = req.user._id;
+  const  documentId  = req.body.documentId;
+  console.log(studentId);
+  console.log(documentId);
+  
+  if (!documentId) throw new apiError(400, "Please provide document id");
+
+  const student = await Student.findById(studentId);
+  if (!student) throw new apiError(404, "Student not found");
+
+  const document = await Document.findById(documentId);
+  if (!document) throw new apiError(404, "Document not found");
+  console.log(document);
+  const cloudinaryUrl = document.url;
+  const cloudinaryPublicId = extractPublicId(cloudinaryUrl);
+  console.log(cloudinaryPublicId);
+  if (!cloudinaryPublicId) throw new apiError(400, "Invalid document URL");
+  const cloudinaryResponse = await cloudinary.uploader.destroy(cloudinaryPublicId);
+  console.log(cloudinaryResponse);
+  
+  if (cloudinaryResponse.result !== "ok") {
+    throw new apiError(500, "Error deleting document from Cloudinary");
+  }
+
+  const index = student.documents.indexOf(documentId);
+  if (index === -1) throw new apiError(404, "Document not found in student's records");
+  student.documents.splice(index, 1);
+  await student.save();
+
+  await Document.findByIdAndDelete(documentId);
+
+  res.status(200).json(new apiResponse(200, "Document deleted successfully", student));
+});

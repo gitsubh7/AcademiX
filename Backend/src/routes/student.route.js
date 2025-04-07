@@ -8,6 +8,7 @@ import {googleAuth,redirectGoogleAuth} from "../controllers/student.controller.j
 import {addClass} from "../controllers/student.controller.js"
 import {uploadDocument} from "../controllers/student.controller.js"
 import { getAllDocuments } from "../controllers/student.controller.js";
+import { deleteDocument } from "../controllers/student.controller.js";
 
 export const studentRouter = Router();
 studentRouter.route("/register").post(
@@ -56,3 +57,4 @@ studentRouter.route("/addClass").get(addClass)
 //document routes
 studentRouter.route("/uploadDocument").post(verifyJWT,upload.single("localDocument"),uploadDocument)
 studentRouter.route("/getAllDocuments").get(verifyJWT,getAllDocuments)  
+studentRouter.route("/deleteDocument").delete(verifyJWT,deleteDocument)
