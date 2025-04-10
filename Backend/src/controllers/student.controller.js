@@ -347,33 +347,37 @@ export const getGithubProfile = asyncHandler(async (req, res, next) => {
 export const getCodeforcesProfile=asyncHandler(async(req,res,next)=>{
   const {username} = req.params
   const url = `https://codeforces.com/api/user.info?handles=${username}`
+  
   const response = (await axios.get(url)).data.result[0];
+  
   const profile = {
     username: response.handle,
     rating: response.rating,
     maxRating: response.maxRating,
     rank: response.rank,
     maxRank: response.maxRank,
+    // problems: response.solvedProblemsCount,
   }
   const studentId = req.user._id;
-  const student = Student.findById(studentId);
-  // // create a leetcode database if user data doesnt exist
-  // const existingProfile = await Coding.findOne({ roll_number: student.roll_number, platform: "codeforces" });
-  // if (existingProfile) {
-  //   // Update the existing profile
-  //   existingProfile.questions_solved = questions_solved;
-  //   existingProfile.contest_rating = rating;
-  //   await existingProfile.save();
-  // } else {
-  //   // Create a new profile
-  //   await Coding.create({
-  //     name:student.name,
-  //     image_url:student.image_url,
-  //     roll_number:student.roll_number,
-  //     questions_solved:questions_solved,
-  //     contest_rating:rating
-  //   })
-  // }
+  const student = await Student.findById(studentId);
+  // create a leetcode database if user data doesnt exist
+  const existingProfile = await Coding.findOne({ roll_number: student.roll_number, platform: "codeforces" });
+  if (existingProfile) {
+    // Update the existing profile
+    existingProfile.questions_solved = questions_solved;
+    existingProfile.contest_rating = rating;
+    await existingProfile.save();
+  } else {
+    // Create a new profile
+    await Coding.create({
+      name:student.name,
+      image_url:student.image_url,
+      roll_number:student.roll_number,
+      questions_solved:0,
+      contest_rating:profile.rating,
+      platform:"codeforces"
+    })
+  }
   
 
   
@@ -388,7 +392,7 @@ export const getLeetCodeProfile = asyncHandler(async (req, res, next) => {
     {
       query,
       variables: { username },
-      
+
     },
     {
       headers: {
@@ -410,6 +414,8 @@ export const getLeetCodeProfile = asyncHandler(async (req, res, next) => {
   const questions_solved= profile.totalSolved;
   const rating = profile.ranking;
   // const {rollnum}=req.body.rollnum;
+
+
   const student = await Student.findById(req.user._id);
   // console.log(student)
   if(!student) throw new apiError(404,"Student not found");
