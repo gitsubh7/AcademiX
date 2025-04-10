@@ -75,6 +75,7 @@ export const registerStudent=asyncHandler(async(req,res,next)=>{
 
 
 
+
   
 })
 
@@ -364,8 +365,8 @@ export const getCodeforcesProfile=asyncHandler(async(req,res,next)=>{
   const existingProfile = await Coding.findOne({ roll_number: student.roll_number, platform: "codeforces" });
   if (existingProfile) {
     // Update the existing profile
-    existingProfile.questions_solved = questions_solved;
-    existingProfile.contest_rating = rating;
+    existingProfile.questions_solved = 0;
+    existingProfile.contest_rating = profile.rating;
     await existingProfile.save();
   } else {
     // Create a new profile
@@ -639,3 +640,30 @@ export const deleteDocument = asyncHandler(async (req, res, next) => {
   res.status(200).json(new apiResponse(200, "Document deleted successfully", student));
 });
 
+export const getCodeForcesRankings = asyncHandler(async (req, res, next) => {
+  const rankings = await Coding.aggregate([
+    { $match: { platform: "codeforces" } },
+    { $sort: { contest_rating: -1 } }
+  ]);
+
+  res.status(200).json(new apiResponse(200, "Codeforces rankings fetched successfully", rankings));
+  
+})
+export const getLeetCodeRankingsC = asyncHandler(async (req, res, next) => {
+  const rankings = await Coding.aggregate([
+    { $match: { platform: "leetcode" } },
+    { $sort: { contest_rating: -1 } }
+  ]);
+
+  res.status(200).json(new apiResponse(200, "LeetCode rankings fetched successfully", rankings));
+})
+
+export const getLeetCodeRankingsQ = asyncHandler(async (req, res, next) => {
+  const rankings = await Coding.aggregate([
+    { $match: { platform: "leetcode" } },
+    //sort based on number of questions
+    { $sort: { questions_solved: -1 } }
+  ]);
+
+  res.status(200).json(new apiResponse(200, "LeetCode rankings fetched successfully", rankings));
+})
