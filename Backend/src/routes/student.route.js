@@ -45,8 +45,8 @@ studentRouter.route("/getAttendance").get(getAttendance)
 
 //coding profile routes
 studentRouter.route("/github/:username").get(getGithubProfile)
-studentRouter.route("/codeforces/:username").get(getCodeforcesProfile)
-studentRouter.route("/leetcode/:username").get(getLeetCodeProfile);
+studentRouter.route("/codeforces/:username").get(verifyJWT,getCodeforcesProfile)
+studentRouter.route("/leetcode/:username").get(verifyJWT,getLeetCodeProfile);
 
 //adding class to router
 studentRouter.route("/google").get(googleAuth)

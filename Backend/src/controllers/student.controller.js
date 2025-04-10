@@ -16,6 +16,7 @@ import { query } from "../utils/leetcodegraphQL.js";
 import { Document } from "../models/documents.model.js";
 import {extractPublicId} from "cloudinary-build-url"
 import  cloudinary  from "cloudinary"
+import { Coding } from "../models/codings.model.js";
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
   const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
@@ -354,6 +355,27 @@ export const getCodeforcesProfile=asyncHandler(async(req,res,next)=>{
     rank: response.rank,
     maxRank: response.maxRank,
   }
+  const studentId = req.user._id;
+  const student = Student.findById(studentId);
+  // // create a leetcode database if user data doesnt exist
+  // const existingProfile = await Coding.findOne({ roll_number: student.roll_number, platform: "codeforces" });
+  // if (existingProfile) {
+  //   // Update the existing profile
+  //   existingProfile.questions_solved = questions_solved;
+  //   existingProfile.contest_rating = rating;
+  //   await existingProfile.save();
+  // } else {
+  //   // Create a new profile
+  //   await Coding.create({
+  //     name:student.name,
+  //     image_url:student.image_url,
+  //     roll_number:student.roll_number,
+  //     questions_solved:questions_solved,
+  //     contest_rating:rating
+  //   })
+  // }
+  
+
   
   res.status(200).json(new apiResponse(200,"Codeforces profile fetched successfully",profile));
 })
@@ -366,6 +388,7 @@ export const getLeetCodeProfile = asyncHandler(async (req, res, next) => {
     {
       query,
       variables: { username },
+      
     },
     {
       headers: {
@@ -373,11 +396,49 @@ export const getLeetCodeProfile = asyncHandler(async (req, res, next) => {
         Referer: 'https://leetcode.com/',
       },
     }
+    
+
   );
 
   if (!result.data) throw new apiError(404, "LeetCode profile not found");
-
+  // const ss = result;
+  // console.log(ss);
+  
   const profile = formatData(result.data.data);
+  // console.log(profile);
+  
+  const questions_solved= profile.totalSolved;
+  const rating = profile.ranking;
+  // const {rollnum}=req.body.rollnum;
+  const student = await Student.findById(req.user._id);
+  // console.log(student)
+  if(!student) throw new apiError(404,"Student not found");
+  
+
+
+  const existingProfile = await Coding.findOne({ roll_number: student.roll_number, platform: "leetcode" });
+  // console.log(existingProfile);
+  
+  if (existingProfile) {
+    // Update the existing profile
+    existingProfile.questions_solved = questions_solved;
+    existingProfile.contest_rating = rating;
+    await existingProfile.save();
+  } else {
+    // Create a new profile
+    // console.log(student.name ,student.image_url, student.roll_number, questions_solved, rating);
+    
+    await Coding.create({
+      name:student.name,
+      image_url:student.image_url,
+      roll_number:student.roll_number,
+      questions_solved:questions_solved,
+      contest_rating:rating,
+      platform:"leetcode"
+    })
+  }
+  
+
   res.status(200).json(new apiResponse(200, "LeetCode profile fetched successfully", profile));
   
 });
@@ -571,3 +632,4 @@ export const deleteDocument = asyncHandler(async (req, res, next) => {
 
   res.status(200).json(new apiResponse(200, "Document deleted successfully", student));
 });
+
