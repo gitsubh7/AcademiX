@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {upload} from "../middlewares/multer.js"
-import {registerStudent,loginStudent,logoutStudent, updateStudent, updateProfileImage,markAbsent,markPresent,getAttendance,removeCourse,editCourse,addCourse, getLeetCodeRankingsQ} from "../controllers/student.controller.js"
+import {registerStudent,loginStudent,logoutStudent, updateStudent, updateProfileImage,markAbsent,markPresent,getAttendance,removeCourse,editCourse,addCourse} from "../controllers/student.controller.js"
 import {verifyJWT} from "../middlewares/auth.js"
 import { changePassword,requestPasswordReset,passwordReset } from "../controllers/student.controller.js"
 import {getGithubProfile,getCodeforcesProfile,getLeetCodeProfile} from "../controllers/student.controller.js"
