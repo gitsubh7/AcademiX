@@ -7,8 +7,10 @@ from PIL import Image
 from io import BytesIO
 import face_recognition
 import base64
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 load_dotenv()
 uri = os.getenv("MONGODB_URI")
 client = MongoClient(uri)
