@@ -44,6 +44,26 @@ const AcademiXDashboard = () => {
   const [activePage, setActivePage] = useState("Dashboard");
   const [showAddClass, setShowAddClass] = useState(false);
 
+  const handleLogout = async () => {
+  try {
+    const response = await fetch("http://localhost:3000/api/v1/student/logout", {
+      method: "POST",
+      credentials: "include", // Important for cookies/sessions
+    });
+
+    if (response.ok) {
+      // Clear localStorage/sessionStorage if you use them
+      // localStorage.removeItem("token");
+
+      // Redirect to login page
+      window.location.href = "/login";
+    } else {
+      console.error("Logout failed");
+    }
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+};
   const renderMainContent = () => {
     switch (activePage) {
       case "Dashboard":
@@ -164,7 +184,7 @@ const AcademiXDashboard = () => {
             ))}
           </nav>
         </div>
-        <Button className="text-white">Logout</Button>
+        <Button onClick={handleLogout}className="text-white">Logout</Button>
       </aside>
 
       {/* Main */}

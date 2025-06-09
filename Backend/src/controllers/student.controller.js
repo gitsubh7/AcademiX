@@ -96,10 +96,11 @@ export const loginStudent = asyncHandler(async(req,res,next)=>{
   const options={
     httpOnly:true,
     secure:true,
+    sameSite:"None",
   }
   return res.status(200)
-  .cookie("accesstoken",at,options)
-  .cookie("refreshtoken",rt,options)
+  .cookie("accessToken",at,options)
+  .cookie("refreshToken",rt,options)
   .json(new apiResponse(200,{user:loggedInStudent,accessToken:at,refreshToken:rt},"Login successful"));
 
 
@@ -113,7 +114,8 @@ export const logoutStudent = asyncHandler(async(req,res,next)=>{
     {new:true})
   const options={
     httpOnly:true,
-    secure:true
+    secure:true,
+    sameSite:"None",
   }
   res.status(200)
   .clearCookie("accessToken",options)
