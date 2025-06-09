@@ -93,15 +93,19 @@ const FaceLogin = () => {
         />
 
         {/* Webcam */}
-        <div className="w-full h-48 mb-6 bg-black flex justify-center items-center">
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            videoConstraints={videoConstraints}
-            className="rounded"
-          />
-        </div>
+       <div className="w-full max-w-md aspect-[9/16] mb-6 bg-black flex justify-center items-center rounded overflow-hidden mx-auto">
+  <Webcam
+    audio={false}
+    ref={webcamRef}
+    screenshotFormat="image/jpeg"
+    videoConstraints={{
+      width: 2250,
+      height: 4000,
+      facingMode: 'user',
+    }}
+    className="w-full h-full object-cover"
+  />
+</div>
 
         <button
           className="w-full bg-[#174C8C] text-white py-3 rounded mb-4"
