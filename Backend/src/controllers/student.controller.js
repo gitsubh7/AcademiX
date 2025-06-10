@@ -19,6 +19,7 @@ import  cloudinary  from "cloudinary"
 import { Coding } from "../models/codings.model.js";
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
+  
   const {name,email,degree,department,section, password,roll_number,bio,year,passout_year,phone_number}=req.body;
   if(!isValidNitpEmail(email)){
       throw new apiError(400,"Invalid Email, use NITP email-address");
@@ -103,7 +104,6 @@ export const loginStudent = asyncHandler(async(req,res,next)=>{
   .cookie("refreshToken",rt,options)
   .json(new apiResponse(200,{user:loggedInStudent,accessToken:at,refreshToken:rt},"Login successful"));
 
-
 })
 
 export const logoutStudent = asyncHandler(async(req,res,next)=>{
@@ -120,8 +120,7 @@ export const logoutStudent = asyncHandler(async(req,res,next)=>{
   res.status(200)
   .clearCookie("accessToken",options)
   .clearCookie("refreshToken",options)
-  .json(new apiResponse(200,{},"User logged out successfully"))
-
+  .json(new apiResponse(200,{},"User logged out successfully"));
 
 })
 
@@ -587,7 +586,11 @@ export const  uploadDocument = asyncHandler(async(req,res,next)=>{
     }
   },{new:true}).select("-password -refreshToken");
   if(!student) throw new apiError(500,"Error updating student");
-  res.status(200).json(new apiResponse(200,"Document added successfully",student));
+  res.status(200).json(new apiResponse(200, "Document added successfully", {
+  id: document._id,
+  name: document.name,
+  url: document.url
+}));
   
 })
 export const getAllDocuments = asyncHandler(async(req,res,next)=>{
@@ -606,34 +609,37 @@ export const getAllDocuments = asyncHandler(async(req,res,next)=>{
   res.status(200).json(new apiResponse(200,"Documents fetched successfully",documentToSend));
   
 })
-
 export const deleteDocument = asyncHandler(async (req, res, next) => {
   const studentId = req.user._id;
-  const  documentId  = req.body.documentId;
-  console.log(studentId);
-  console.log(documentId);
-  
+  const documentId = req.params.id;
+
+  console.log("Student ID:", studentId);
+  console.log("Document ID:", documentId);
+
   if (!documentId) throw new apiError(400, "Please provide document id");
 
   const student = await Student.findById(studentId);
   if (!student) throw new apiError(404, "Student not found");
 
   const document = await Document.findById(documentId);
+  console.log("Found Document:", document);
   if (!document) throw new apiError(404, "Document not found");
-  console.log(document);
+
   const cloudinaryUrl = document.url;
   const cloudinaryPublicId = extractPublicId(cloudinaryUrl);
-  console.log(cloudinaryPublicId);
+  console.log("Cloudinary Public ID:", cloudinaryPublicId);
   if (!cloudinaryPublicId) throw new apiError(400, "Invalid document URL");
+
   const cloudinaryResponse = await cloudinary.uploader.destroy(cloudinaryPublicId);
-  console.log(cloudinaryResponse);
-  
+  console.log("Cloudinary response:", cloudinaryResponse);
+
   if (cloudinaryResponse.result !== "ok") {
     throw new apiError(500, "Error deleting document from Cloudinary");
   }
 
   const index = student.documents.indexOf(documentId);
   if (index === -1) throw new apiError(404, "Document not found in student's records");
+
   student.documents.splice(index, 1);
   await student.save();
 
@@ -641,6 +647,7 @@ export const deleteDocument = asyncHandler(async (req, res, next) => {
 
   res.status(200).json(new apiResponse(200, "Document deleted successfully", student));
 });
+
 
 export const getCodeForcesRankings = asyncHandler(async (req, res, next) => {
   const rankings = await Coding.aggregate([
