@@ -59,7 +59,7 @@ studentRouter.route("/addClass").get(addClass)
 //document routes
 studentRouter.route("/uploadDocument").post(verifyJWT,upload.single("localDocument"),uploadDocument)
 studentRouter.route("/getAllDocuments").get(verifyJWT,getAllDocuments)  
-studentRouter.route("/deleteDocument").delete(verifyJWT,deleteDocument)
+studentRouter.route("/deleteDocument/:id").delete(verifyJWT,deleteDocument)
 
 
 //global routes
