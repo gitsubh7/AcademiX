@@ -43,7 +43,7 @@ const FaceLogin = () => {
       formData.append('image', blob, 'capture.jpg');
       formData.append('email', email);
 
-      const response = await fetch('http://localhost:3000/face_recog', {
+      const response = await fetch('http://192.168.139.142:3000/face_recog', {
         method: 'POST',
         body: formData,
       });
@@ -93,7 +93,7 @@ const FaceLogin = () => {
         />
 
         {/* Webcam */}
-       <div className="w-full max-w-md aspect-[9/16] mb-6 bg-black flex justify-center items-center rounded overflow-hidden mx-auto">
+        <div className="w-full max-w-md aspect-[9/16] mb-6 bg-black flex justify-center items-center rounded overflow-hidden mx-auto">
   <Webcam
     audio={false}
     ref={webcamRef}
@@ -106,6 +106,8 @@ const FaceLogin = () => {
     className="w-full h-full object-cover"
   />
 </div>
+
+
 
         <button
           className="w-full bg-[#174C8C] text-white py-3 rounded mb-4"
