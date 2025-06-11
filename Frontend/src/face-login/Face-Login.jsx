@@ -38,7 +38,7 @@ const FaceLogin = () => {
       formData.append('image', blob, 'capture.jpg');
       formData.append('email', email);
 
-      const response = await fetch('http://192.168.139.142:3000/face_recog', {
+      const response = await fetch('http://192.168.139.142:4000/face_recog', {
         method: 'POST',
         body: formData,
       });
