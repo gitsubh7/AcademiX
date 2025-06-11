@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Logo from "../assets/Logo.png";
-import Leet from "../assets/Leet.png";
-import Geek from "../assets/Geek.png";
-import Code from "../assets/Code.png";
+// import Leet from "../assets/Leet.png";
+// import Geek from "../assets/Geek.png";
+// import Code from "../assets/Code.png";
 
 const Button = ({ children, className = "", onClick, type = "button", disabled = false }) => (
   <button
