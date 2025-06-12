@@ -8,9 +8,11 @@ import axios from "axios";
 const SignUp = () => {
   const navigate = useNavigate();
   const { userState, handlerUserInput, resetUserState } = useUserContext();
+  const [inputReady, setInputReady] = useState(false);
 
   useEffect(() => {
     resetUserState();
+    setTimeout(() => setInputReady(true), 50);
   }, []);
 
   const {
@@ -83,9 +85,9 @@ const SignUp = () => {
         <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center md:text-left">Sign Up</h1>
 
         <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-4 md:gap-6 w-full">
-          <input type="text" name="name" value={name} onChange={handlerUserInput("name")} className="input" placeholder="Full Name" required />
-          <input type="email" name="email" value={email} onChange={handlerUserInput("email")} className="input" placeholder="Email" required />
-          <select name="degree" value={degree} onChange={handlerUserInput("degree")} className="input text-black bg-white">
+          <input type="text" name="name" autoComplete="off" value={name} onChange={handlerUserInput("name")} className="input" placeholder="Full Name" required />
+          <input  readOnly={!inputReady} type="email" name="email" autoComplete="off" value={email} onChange={handlerUserInput("email")} className="input" placeholder="Email" required />
+          <select name="degree" value={degree} autoComplete="off" onChange={handlerUserInput("degree")} className="input text-black bg-white">
             <option value="">Degree</option>
             <option value="B.Tech">B.Tech</option>
             <option value="M.Tech">M.Tech</option>
@@ -116,9 +118,11 @@ const SignUp = () => {
 
           <div className="relative">
             <input
+             readOnly={!inputReady}
               type={showPassword ? "text" : "password"}
               name="password"
               value={password}
+              autoComplete="off"
               onChange={handlerUserInput("password")}
               className="input"
               placeholder="Password"

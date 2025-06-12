@@ -6,10 +6,12 @@ import logo from "../assets/Logo.png";
 const Login = () => {
   const {loginUser,userState,handlerUserInput,resetUserState} = useUserContext();
   const {email,password} = userState;
+  const [inputReady, setInputReady] = useState(false);
 
 const navigate = useNavigate();
  useEffect(() => {
   resetUserState();
+  setTimeout(() => setInputReady(true), 50);
 }, []);
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
@@ -32,14 +34,16 @@ const navigate = useNavigate();
           <p className="text-gray-600 mb-6 text-[0.9rem] md:text-lg">
             Welcome Back! Please login to your account.
           </p>
-          <form onSubmit={loginUser} className="space-y-6">
+          <form onSubmit={loginUser} className="space-y-6" autoComplete="off">
             <div>
               <label className="block text-gray-700 text-[0.9rem] md:text-lg">
                 User Email
               </label>
               <input
+                readOnly={!inputReady}
                 type="email"
                 value={email}
+                autoComplete="off"
                 onChange={handlerUserInput("email")}
                 placeholder="testmail@gmail.com"
                 className="w-full p-3 border border-gray-400 rounded-lg text-[0.9rem] md:text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -51,8 +55,11 @@ const navigate = useNavigate();
             </label>
             <div className="relative">
               <input
+              readOnly={!inputReady}
                 type={showPassword ? "text" : "password"}
+                
                 value={password}
+                autoComplete="off"
                 onChange={handlerUserInput("password")}
                 id="password"
                 placeholder="*********"
