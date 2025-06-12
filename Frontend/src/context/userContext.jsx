@@ -195,12 +195,29 @@ export const UserContextProvider = ({ children }) => {
     const value = name === "image_url" ? e.target.files[0] : e.target.value;
     setUserState((prevState) => ({ ...prevState, [name]: value }));
   };
-
+const resetUserState = () => {
+  setUserState({
+    name: "",
+    email: "",
+    degree: "",
+    department: "",
+    section: "",
+    password: "",
+    roll_number: "",
+    bio: "",
+    year: "",
+    passout_year: "",
+    phone_number: "",
+    subjects_enrolled: "",
+    image_url: "",
+  });
+};
   return (
     <UserContext.Provider value={{ 
     registerUser, 
     userState, 
     handlerUserInput, 
+    resetUserState,
     loading,
     loginUser,
     forgotPasswordEmail,
@@ -210,6 +227,7 @@ export const UserContextProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
 
 export const useUserContext = () => {
   return useContext(UserContext);

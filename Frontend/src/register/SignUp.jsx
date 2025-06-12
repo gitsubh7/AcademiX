@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/userContext.jsx";
 import v2 from "../assets/v2.png";
@@ -7,7 +7,12 @@ import axios from "axios";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { userState, handlerUserInput } = useUserContext();
+  const { userState, handlerUserInput, resetUserState } = useUserContext();
+
+  useEffect(() => {
+    resetUserState();
+  }, []);
+
   const {
     name,
     email,
@@ -23,6 +28,7 @@ const SignUp = () => {
     subjects_enrolled,
     image_url,
   } = userState;
+
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
 
@@ -42,7 +48,6 @@ const SignUp = () => {
     formData.append("passout_year", passout_year);
     formData.append("phone_number", phone_number);
 
-    // subjects_enrolled is a comma-separated string, convert to array
     subjects_enrolled
       .split(",")
       .map((subj) => subj.trim())
@@ -60,7 +65,6 @@ const SignUp = () => {
       });
 
       console.log("Registered successfully:", res.data);
-      // Optionally redirect
       navigate("/login");
     } catch (err) {
       console.error("Registration failed:", err.response?.data || err.message);
@@ -77,16 +81,30 @@ const SignUp = () => {
         </div>
 
         <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center md:text-left">Sign Up</h1>
-        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+
+        <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-4 md:gap-6 w-full">
           <input type="text" name="name" value={name} onChange={handlerUserInput("name")} className="input" placeholder="Full Name" required />
           <input type="email" name="email" value={email} onChange={handlerUserInput("email")} className="input" placeholder="Email" required />
-          <input type="text" name="degree" value={degree} onChange={handlerUserInput("degree")} className="input" placeholder="Degree" />
-          
+          <select name="degree" value={degree} onChange={handlerUserInput("degree")} className="input text-black bg-white">
+            <option value="">Degree</option>
+            <option value="B.Tech">B.Tech</option>
+            <option value="M.Tech">M.Tech</option>
+            <option value="BCA">BCA</option>
+            <option value="Phd">PhD</option>
+          </select>
           <select name="department" value={department} onChange={handlerUserInput("department")} className="input text-black bg-white">
             <option value="">Select Department</option>
             <option value="Computer Science and Engineering">Computer Science and Engineering</option>
             <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
             <option value="Mechanical Engineering">Mechanical Engineering</option>
+            <option value="Electrical Engineering">Electrical Engineering</option>
+            <option value="Chemical Science and Technology">Chemical Science and Technology</option>
+            <option value="Mathematics and Computing Technology">Mathematics and Computing Technology</option>
+            <option value="Architecture & Planning">Architecture & Planning</option>
+            <option value="Humanities & Social Science">Humanities & Social Sciences</option>
+            <option value="Applied Physics and Materials Engineering">Applied Physics and Materials Engineering</option>
+            <option value="civil Engineering">Civil Engineering</option>
+
           </select>
 
           <select name="section" value={section} onChange={handlerUserInput("section")} className="input text-black bg-white">
@@ -97,8 +115,16 @@ const SignUp = () => {
           </select>
 
           <div className="relative">
-            <input type={showPassword ? "text" : "password"} name="password" value={password} onChange={handlerUserInput("password")} className="input" placeholder="Password" required />
-            <button type="button" onClick={togglePassword} className="absolute right-2 top-2 text-white">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={password}
+              onChange={handlerUserInput("password")}
+              className="input"
+              placeholder="Password"
+              required
+            />
+            <button type="button" onClick={togglePassword} className="absolute right-3 top-3 text-white text-sm">
               {showPassword ? "👁️" : "👁️‍🗨️"}
             </button>
           </div>
@@ -120,7 +146,7 @@ const SignUp = () => {
           <input type="text" name="subjects_enrolled" value={subjects_enrolled} onChange={handlerUserInput("subjects_enrolled")} className="input" placeholder="e.g., CS101, MA102" />
 
           <div>
-            <label className="block text-sm md:text-base">Upload Passport-Size Photo</label>
+            <label className="block text-sm md:text-base mb-1">Upload Passport-Size Photo</label>
             <div className="relative w-full">
               <input type="file" accept="image/*" onChange={handlerUserInput("image_url")} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
               <div className="flex items-center justify-between p-2 rounded-md border border-white/50 bg-transparent text-white cursor-pointer">

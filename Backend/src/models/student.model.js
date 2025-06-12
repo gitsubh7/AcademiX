@@ -34,7 +34,6 @@ const studentSchema = new mongoose.Schema(
         "Humanities & Social Sciences",
         "Mathematics and Computing Technology",
         "Mechanical Engineering",
-        "Mechatronics & Automation Engineering",
       ],
     },
     section: {

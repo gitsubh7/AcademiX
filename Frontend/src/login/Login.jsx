@@ -4,9 +4,13 @@ import {useUserContext} from "../context/userContext.jsx";
 import logo from "../assets/Logo.png";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const {loginUser,userState,handlerUserInput} = useUserContext();
+  const {loginUser,userState,handlerUserInput,resetUserState} = useUserContext();
   const {email,password} = userState;
+
+const navigate = useNavigate();
+ useEffect(() => {
+  resetUserState();
+}, []);
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
   return (
