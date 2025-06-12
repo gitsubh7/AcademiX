@@ -127,7 +127,7 @@ export const UserContextProvider = ({ children }) => {
         email: "",
         password: "",
       });
-      navigate("/");
+      navigate("/home");
     }
     catch(error){
       console.log("Error logging in user",error);
@@ -172,7 +172,7 @@ export const UserContextProvider = ({ children }) => {
       }
   
       const res = await axios.post(
-        `${serverUrl}/api/v1/student/passwordReset`,
+         "http://localhost:3000/api/v1/student/passwordReset",
         { password },  // Send password in body
         { 
           params: { id, token }, // Send id & token in query parameters

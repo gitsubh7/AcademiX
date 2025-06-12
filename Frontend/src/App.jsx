@@ -14,9 +14,10 @@ export default function App() {
       <Route path="/" element={<SignUp />} />
 
       <Route path="/login" element={<Login />} />
+      <Route path="/home" element={<Home/>}/>
       <Route path="/register" element={<SignUp />} />
       <Route path="/forgot-password" element={<ForgotPass />} />
-      <Route path="/api/v1/student/passwordReset" element={<ResetPass />} />
+      <Route path="/passwordReset" element={<ResetPass />} />
       <Route path="/face-login" element={<FaceLogin />} />
 
     </Routes>
