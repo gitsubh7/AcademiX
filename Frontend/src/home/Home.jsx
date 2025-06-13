@@ -3,6 +3,7 @@ import Logo from "../assets/Logo.png";
 import Leet from "../assets/Leet.png";
 import Geek from "../assets/Geek.png";
 import Code from "../assets/Code.png";
+import WeatherCard from "../WeatherSection/WeatherCard";
 
 const Button = ({ children, className = "", onClick, type = "button", disabled = false }) => (
   <button
@@ -217,23 +218,18 @@ const AcademiXDashboard = () => {
     switch (activePage) {
       case "Dashboard":
         return (
-          <div>
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-4xl font-bold text-[#0C1D4F]">Welcome to AcademiX!</h1>
-                <p className="mt-4 text-lg">Hey, <span className="font-semibold text-black">User name!</span><br />Welcome Back!</p>
-              </div>
-              <div className="flex flex-col items-end">
-                <div className="bg-[#2D2F92] text-white rounded-xl p-4 w-48 text-center">
-                  <p className="text-sm">Weather</p>
-                  <p className="text-lg font-bold">Sunny</p>
-                  <p className="text-4xl font-bold">36°</p>
-                  <p className="text-xs mt-2">15:33 MON 04-11</p>
-                  <p className="text-xs">Bihta, Bihar</p>
-                </div>
-                <div className="mt-2 text-black text-sm">User name</div>
-              </div>
-            </div>
+           <div>
+      {/* Top row */}
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-4xl font-bold text-[#0C1D4F]">Welcome to AcademiX!</h1>
+          <p className="mt-4 text-lg">
+            Hey, <span className="font-semibold text-black">User name!</span><br />
+            Welcome Back!
+          </p>
+        </div>
+        <WeatherCard city="bihta" /> {/* new component */}
+      </div>
             <p className="mt-6 italic">Never miss a beat—track your attendance with ease ✅</p>
 
             <div className="flex gap-4 mt-6">
