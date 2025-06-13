@@ -470,11 +470,13 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
   const url = auth2Client.generateAuthUrl({
     access_type: "offline", // This gives you the refresh token.
     scope: scopes,
+    prompt:'consent',
   });
 
   res.redirect(url);
 });
 
+// controllers/googleController.js (or wherever you keep it)
 export const redirectGoogleAuth = asyncHandler(async (req, res, next) => {
   const auth2Client = new google.auth.OAuth2({
     clientId: process.env.GOOGLE_CLIENT_ID,
@@ -484,86 +486,104 @@ export const redirectGoogleAuth = asyncHandler(async (req, res, next) => {
 
   const { code } = req.query;
   if (!code) {
-    return res.status(400).json({ error: "Authorization code is missing from the query." });
+    return res.status(400).send("Missing ?code param from Google OAuth");
   }
 
-  // Get tokens using the authorization code
+  // Exchange the one‑time code for tokens
   const { tokens } = await auth2Client.getToken(code);
 
-  console.log('Tokens:', tokens);
-
-  // Respond with the tokens (access_token and refresh_token)
-  res.status(200).json({
-    message: "Google authentication successful",
-    tokens,
-  });
+  /*  ────────────────────────────────────────────────────────────────
+      Send the tokens back to the opener (your React app) via
+      postMessage, then close the popup.  The origin **must** match
+      exactly whatever your React app runs on, e.g.
+      http://localhost:5173  or  https://app.example.com
+  ────────────────────────────────────────────────────────────────── */
+  const html = `
+    <script>
+      window.opener.postMessage(${JSON.stringify(tokens)}, "http://localhost:3001");
+      window.close();
+    </script>
+  `;
+  res.setHeader("Content-Type", "text/html");
+  res.send(html);
 });
 
 
+
 export const addClass = asyncHandler(async (req, res, next) => {
+  // Expect:  Authorization: Bearer <access_token>
+  //          x-refresh-token: <refresh_token>
+  const accessToken  = req.headers.authorization?.split(" ")[1];
+  const refreshToken = req.headers["x-refresh-token"];   // custom header
 
-  const accessToken = req.headers['authorization']?.split(' ')[1]; 
-  // const refreshToken = req.headers['x-refresh-token'];  // Refresh token in custom header 'x-refresh-token'
-
-  if (!accessToken) {
-    return res.status(401).json({ error: "User is not authenticated. Please log in first." });
+  if (!accessToken || !refreshToken) {
+    return res.status(401).json({ error: "Google Calendar not connected" });
   }
+
   const auth2Client = new google.auth.OAuth2({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: process.env.GOOGLE_REDIRECT_URI,
   });
 
-  
+  // Google client will auto‑refresh the access token when it expires
   auth2Client.setCredentials({
-    access_token: accessToken
-    // refresh_token: refreshToken,
+    access_token: accessToken,
+    refresh_token: refreshToken,
   });
 
-  
-  console.log(auth2Client.credentials.access_token);
+  /* ───── Build event details ───── */
+  const {
+    subject_code,
+    subject_name,
+    day,                 // e.g. "Monday"
+    classroom,
+    professor_name,
+    start_time,          // ISO strings ‑ e.g. "2025-06-16T10:00:00"
+    end_time,
+  } = req.body;
 
-  const calendar = google.calendar({ version: 'v3', auth: auth2Client });
-  const { subject_code, subject_name, day, classroom, professor_name, start_time, end_time } = req.body;
+  // Map weekday → RRULE BYDAY code
+  const dayMap = {
+    Monday: "MO",
+    Tuesday: "TU",
+    Wednesday: "WE",
+    Thursday: "TH",
+    Friday: "FR",
+    Saturday: "SA",
+    Sunday: "SU",
+  };
+  const byDay = dayMap[day] || "MO";
 
+  // UNTIL = 6 months after first class
+  const startDate   = new Date(start_time);
+  const untilDate   = new Date(startDate);
+  untilDate.setMonth(untilDate.getMonth() + 6);
+  const untilString = untilDate.toISOString().replace(/[-:.]/g, "").split("T")[0] + "T000000Z";
 
-  // Calculate the 'UNTIL' date for 6 months from the start time
-  const startDate = new Date(start_time);
-  const untilDate = new Date(startDate);
-  untilDate.setMonth(untilDate.getMonth() + 6); // Set the date 6 months ahead
-  const untilString = untilDate.toISOString().replace(/[-:.]/g, '').split('T')[0] + 'T000000Z'; // Format in YYYYMMDDTHHMMSSZ
+  const calendar = google.calendar({ version: "v3", auth: auth2Client });
 
-  // Construct the event summary and description
-  const eventSummary = `${subject_code}: ${subject_name}`;
-  const eventDescription = `Classroom: ${classroom}\nProfessor: ${professor_name}`;
-
-  await calendar.events.insert({
-    calendarId: 'primary',
-    auth: auth2Client,
-    requestBody: {
-      summary: eventSummary,
-      description: eventDescription,
-      location: classroom,
-      organizer: {
-        displayName: professor_name,
-        // email: professor_email, // You'll need to provide the professor's email
+  try {
+    await calendar.events.insert({
+      calendarId: "primary",
+      requestBody: {
+        summary: `${subject_code}: ${subject_name}`,
+        description: `Classroom: ${classroom}\nProfessor: ${professor_name}`,
+        location: classroom,
+        organizer: { displayName: professor_name },
+        start: { dateTime: start_time, timeZone: "Asia/Kolkata" },
+        end:   { dateTime: end_time,   timeZone: "Asia/Kolkata" },
+        recurrence: [`RRULE:FREQ=WEEKLY;BYDAY=${byDay};UNTIL=${untilString}`],
       },
-      start: {
-        dateTime: start_time,
-        timeZone: 'Asia/Kolkata',
-      },
-      end: {
-        dateTime: end_time,
-        timeZone: 'Asia/Kolkata',
-      },
-      recurrence: [
-        `RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=${untilString}`,
-      ],
-    },
-  });
-
-  res.send({ message: "Event added successfully" });
-})
+    });
+    res.json({ message: "Class added & synced to Google Calendar" });
+  } catch (err) {
+    if (err.code === 401) {
+      // access + refresh pair is no longer valid
+      return res.status(401).json({ error: "Google token expired or revoked. Please reconnect." });
+    }
+    next(err); // let global error handler deal with it
+  }
+});
 
 
 export const  uploadDocument = asyncHandler(async(req,res,next)=>{

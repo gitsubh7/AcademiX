@@ -53,7 +53,7 @@ studentRouter.route("/leetcode/:username").get(verifyJWT,getLeetCodeProfile);
 //adding class to router
 studentRouter.route("/google").get(googleAuth)
 studentRouter.route("/google/redirect").get(redirectGoogleAuth)
-studentRouter.route("/addClass").get(addClass)
+studentRouter.route("/addClass").post(addClass)
 
 
 //document routes
