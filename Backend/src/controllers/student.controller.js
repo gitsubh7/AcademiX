@@ -457,14 +457,14 @@ export const getLeetCodeProfile = asyncHandler(async (req, res, next) => {
 
 
 export const googleAuth = asyncHandler(async (req, res, next) => {
-  const auth2Client = new google.auth.OAuth2({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: process.env.GOOGLE_REDIRECT_URI,
-  });
+  const auth2Client = new google.auth.OAuth2(
+     process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+   process.env.GOOGLE_REDIRECT_URI,
+  );
 
   const scopes = [
-    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/calendar.events',
   ];
 
   const url = auth2Client.generateAuthUrl({
@@ -478,11 +478,11 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
 
 // controllers/googleController.js (or wherever you keep it)
 export const redirectGoogleAuth = asyncHandler(async (req, res, next) => {
-  const auth2Client = new google.auth.OAuth2({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: process.env.GOOGLE_REDIRECT_URI,
-  });
+  const auth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+     process.env.GOOGLE_CLIENT_SECRET,
+ process.env.GOOGLE_REDIRECT_URI,
+  );
 
   const { code } = req.query;
   if (!code) {
@@ -499,11 +499,11 @@ export const redirectGoogleAuth = asyncHandler(async (req, res, next) => {
       http://localhost:5173  or  https://app.example.com
   ────────────────────────────────────────────────────────────────── */
   const html = `
-    <script>
-      window.opener.postMessage(${JSON.stringify(tokens)}, "http://localhost:3001");
-      window.close();
-    </script>
-  `;
+  <script>
+    window.opener.postMessage(${JSON.stringify(tokens)}, "http://localhost:3001");
+    window.close();
+  </script>
+`;
   res.setHeader("Content-Type", "text/html");
   res.send(html);
 });
@@ -516,14 +516,14 @@ export const addClass = asyncHandler(async (req, res, next) => {
   const accessToken  = req.headers.authorization?.split(" ")[1];
   const refreshToken = req.headers["x-refresh-token"];   // custom header
 
-  if (!accessToken || !refreshToken) {
-    return res.status(401).json({ error: "Google Calendar not connected" });
-  }
+  if (!accessToken || !refreshToken || refreshToken === 'undefined') {
+  return res.status(401).json({ error: 'Google Calendar not connected' });
+}
 
-  const auth2Client = new google.auth.OAuth2({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  });
+  const auth2Client = new google.auth.OAuth2(
+     process.env.GOOGLE_CLIENT_ID,
+     process.env.GOOGLE_CLIENT_SECRET,
+  );
 
   // Google client will auto‑refresh the access token when it expires
   auth2Client.setCredentials({
@@ -558,32 +558,37 @@ export const addClass = asyncHandler(async (req, res, next) => {
   const startDate   = new Date(start_time);
   const untilDate   = new Date(startDate);
   untilDate.setMonth(untilDate.getMonth() + 6);
-  const untilString = untilDate.toISOString().replace(/[-:.]/g, "").split("T")[0] + "T000000Z";
+  const untilString = untilDate.toISOString().replace(/[-:.]/g, "").slice(0, 15) + "Z";
+// → YYYYMMDDThhmmssZ
 
   const calendar = google.calendar({ version: "v3", auth: auth2Client });
 
   try {
-    await calendar.events.insert({
-      calendarId: "primary",
-      requestBody: {
-        summary: `${subject_code}: ${subject_name}`,
-        description: `Classroom: ${classroom}\nProfessor: ${professor_name}`,
-        location: classroom,
-        organizer: { displayName: professor_name },
-        start: { dateTime: start_time, timeZone: "Asia/Kolkata" },
-        end:   { dateTime: end_time,   timeZone: "Asia/Kolkata" },
-        recurrence: [`RRULE:FREQ=WEEKLY;BYDAY=${byDay};UNTIL=${untilString}`],
-      },
-    });
-    res.json({ message: "Class added & synced to Google Calendar" });
-  } catch (err) {
-    if (err.code === 401) {
-      // access + refresh pair is no longer valid
-      return res.status(401).json({ error: "Google token expired or revoked. Please reconnect." });
-    }
-    next(err); // let global error handler deal with it
+  await calendar.events.insert({
+    calendarId: "primary",
+    requestBody: {
+      summary: `${subject_code}: ${subject_name}`,
+      description: `Classroom: ${classroom}\nProfessor: ${professor_name}`,
+      location: classroom,
+      start: { dateTime: start_time, timeZone: "Asia/Kolkata" },
+      end:   { dateTime: end_time,   timeZone: "Asia/Kolkata" },
+      recurrence: [`RRULE:FREQ=WEEKLY;BYDAY=${byDay};UNTIL=${untilString}`],
+    },
+  });
+  res.json({ message: "Class added & synced to Google Calendar" });
+} catch (err) {
+  console.error("Google Calendar error →", err.errors || err);
+  if (err.code === 401) {
+    return res
+      .status(401)
+      .json({ error: "Google token expired or revoked. Please reconnect." });
+  } else if (err.code === 403) {
+    return res
+      .status(403)
+      .json({ error: "Calendar write scope missing. Re‑connect Google Calendar." });
   }
-});
+  next(err);
+}});
 
 
 export const  uploadDocument = asyncHandler(async(req,res,next)=>{

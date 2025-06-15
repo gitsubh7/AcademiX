@@ -40,7 +40,7 @@ const AddClassForm = ({ onClose }) => {
     professor_name: "",
     start_time: "",
     end_time: "",
-    day: "MO", // default – Monday
+    day: "Monday", // default – Monday
   });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
@@ -67,19 +67,28 @@ const AddClassForm = ({ onClose }) => {
         .minute(Number(form.end_time.split(":")[1]))
         .toDate()
         .toISOString();
-
+        const headers = { Authorization: `Bearer ${getAccessToken()}` };
+const rToken  = getRefreshToken();
+if (rToken) headers['x-refresh-token'] = rToken;
       await axios.post(
-        "http://localhost:3000/api/v1/student/addClass", // Backend route
-        { ...form, start_time: startISO, end_time: endISO },
-        { headers: { Authorization: `Bearer ${getAccessToken()}`, "x-refresh-token": getRefreshToken(), } }
-      );
-
+  "http://localhost:3000/api/v1/student/addClass",
+  { ...form, start_time: startISO, end_time: endISO },
+  { headers }
+);
       setMsg("Event added to Google Calendar 🎉");
-      setTimeout(() => {
-        onClose();
-      }, 1200);
+      if (!err) {
+  setTimeout(() => onClose(), 1200);
+}
     } catch (err) {
-      setMsg(err.response?.data?.error || "Something went wrong");
+      const errorMsg = err.response?.data?.error || "Something went wrong";
+setMsg(errorMsg);
+if (errorMsg.includes("Google token expired")) {
+  setHasGoogleToken(false);
+  localStorage.removeItem("gAccess");
+  localStorage.removeItem("gRefresh");
+  localStorage.removeItem("gExpires");
+}
+
     } finally {
       setLoading(false);
     }

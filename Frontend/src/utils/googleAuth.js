@@ -1,7 +1,9 @@
 // utils/googleAuth.js
 // src/utils/googleAuth.js
 export function startGoogleLogin() {
-  const popupURL = "http://localhost:3000/api/v1/student/google";
+  const scope = encodeURIComponent("https://www.googleapis.com/auth/calendar");
+
+  const popupURL = "http://localhost:3000/api/v1/student/google?prompt=consent&access_type=offline&scope=${scope";
   const w = 500, h = 600;
   const left = (screen.width - w) / 2;
   const top = (screen.height - h) / 2;
@@ -30,7 +32,7 @@ export function startGoogleLogin() {
 
     function messageHandler(e) {
       // NOTE: Replace this with your backend origin
-      const expectedOrigin = import.meta.env.VITE_API_URL;
+      const expectedOrigin = "http://localhost:3000";
       if (e.origin !== expectedOrigin) return;
 
       const { access_token, refresh_token, expires_in } = e.data || {};
