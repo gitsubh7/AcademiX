@@ -7,10 +7,8 @@ const WeatherCard = () => {
   const [fetchError, setFetchError] = useState(null);
   const [clock, setClock] = useState(new Date());
 
-  // Fetch weather on city change
   useEffect(() => {
     let cancelled = false;
-
     (async () => {
       try {
         const data = await getWeather(city);
@@ -22,57 +20,60 @@ const WeatherCard = () => {
         if (!cancelled) setFetchError(err.message || "Error");
       }
     })();
-
     return () => {
       cancelled = true;
     };
   }, [city]);
 
-  // Live clock
   useEffect(() => {
     const id = setInterval(() => setClock(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  // Time formatter
   const timeStr = new Intl.DateTimeFormat("en-IN", {
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit",
+  }).format(clock);
+
+  const dateStr = new Intl.DateTimeFormat("en-IN", {
     weekday: "short",
     day: "2-digit",
     month: "2-digit",
   }).format(clock);
 
-  if (fetchError) {
-    return <div className="text-red-500">Weather: {fetchError}</div>;
-  }
+  if (fetchError) return <div className="text-red-500">Weather: {fetchError}</div>;
+  if (!weather) return <div className="text-white">Loading…</div>;
 
-  if (!weather) {
-    return <div className="text-white">Loading…</div>;
-  }
+  const fullCityName = city === "bihta" ? "Bihta, Bihar" : "Patna, Bihar";
 
   return (
-    <div className="bg-[#2e3192] text-white rounded-xl p-4 w-[220px] text-center shadow-lg select-none">
-      <h3 className="text-sm font-medium">Weather</h3>
+    <div className="relative bg-[#232B84] text-white rounded-xl p-4 w-[196px] h-[120px] shadow-md font-sans">
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-sm font-semibold mb-1">Sunny</h3>
+          <p className="text-4xl font-bold">{Math.round(weather.temperature)}°</p>
+        </div>
+        <div className="text-right">
+          <p className="text-lg font-medium">{timeStr}</p>
+          <p className="text-xs uppercase">{dateStr}</p>
+        </div>
+      </div>
 
-      {/* Weather code mapping can be improved here */}
-      <p className="text-lg font-semibold mb-1">Sunny</p>
+      <div className="absolute bottom-2 right-2">
+        <span className="bg-blue-200 text-[#232B84] text-xs px-3 py-[2px] rounded-full font-medium shadow-sm">
+          {fullCityName}
+        </span>
+      </div>
 
-      <p className="text-4xl font-bold">
-        {Math.round(weather.temperature)}°
-      </p>
-
-      <p className="text-sm mt-1">{timeStr}</p>
-      <p className="text-sm mb-2">{weather.city}</p>
-
-      {/* Toggle button */}
-      <button
-        className="bg-white text-[#2e3192] text-sm px-3 py-1 rounded-full font-semibold hover:bg-gray-200 transition-all duration-200"
-        onClick={() => setCity((prev) => (prev === "bihta" ? "patna" : "bihta"))}
-      >
-        Show {city === "bihta" ? "Patna" : "Bihta"}
-      </button>
+      {/* Toggle button (optional, outside main design) */}
+      <div className="absolute bottom-2 left-2">
+        <button
+          className="text-[10px] bg-white text-[#232B84] px-2 py-[2px] rounded-full"
+          onClick={() => setCity((prev) => (prev === "bihta" ? "patna" : "bihta"))}
+        >
+          Show {city === "bihta" ? "Patna" : "Bihta"}
+        </button>
+      </div>
     </div>
   );
 };

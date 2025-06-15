@@ -7,6 +7,7 @@ import Geek from "../assets/Geek.png";
 import Code from "../assets/Code.png";
 import WeatherCard from "../WeatherSection/WeatherCard";
 import { startGoogleLogin } from "../utils/googleAuth";
+import { useUserContext } from "../context/userContext.jsx";
 
 /*********************************
  *  SMALL RE‑USABLE BUTTON
@@ -296,6 +297,8 @@ useEffect(() => {
     };
     return icons[ext] || "📁";
   };
+  const { userState } = useUserContext();
+  const firstName = userState?.name?.split(" ")[0] || "there";
 
   /************ MAIN CONTENT ************/
   const renderMainContent = () => {
@@ -343,7 +346,7 @@ useEffect(() => {
             <div>
               <h1 className="text-4xl font-bold text-[#0C1D4F]">Welcome to AcademiX!</h1>
               <p className="mt-4 text-lg">
-                Hey, <span className="font-semibold">User name!</span>
+                Hey, <span className="font-semibold">{firstName}</span>
                 <br />Welcome Back!
               </p>
             </div>
@@ -411,7 +414,7 @@ useEffect(() => {
         <div>
           <h2 className="text-2xl font-bold mb-6">Upload Your Documents</h2>
           {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
-          <form onSubmit={handleUpload} className="border border-gray-400 rounded-xl p-6 flex flex-col items-center w-64 bg-white shadow">
+          <form onSubmit={handleUpload} className="border border-gray-400 rounded-xl p-6 flex flex-col items-center w-64 bg-55A2D3 shadow">
             <label className="w-full mb-4 text-sm font-medium text-gray-700">
               Document Name
               <input type="text" value={docName} onChange={(e) => setDocName(e.target.value)} className="w-full p-2 border rounded mt-1" required />
