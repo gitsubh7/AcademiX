@@ -152,12 +152,26 @@ const SignUp = () => {
           <div>
             <label className="block text-sm md:text-base mb-1">Upload Passport-Size Photo</label>
             <div className="relative w-full">
-              <input type="file" accept="image/*" onChange={handlerUserInput("image_url")} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+              <input
+  type="file"
+  accept="image/*"
+  onChange={(e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handlerUserInput("image_url")({ target: { value: file } });
+    }
+  }}
+  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+/>
+
               <div className="flex items-center justify-between p-2 rounded-md border border-white/50 bg-transparent text-white cursor-pointer">
                 {image_url ? image_url.name : "Choose Photo"}
               </div>
             </div>
-            {image_url && <img src={URL.createObjectURL(image_url)} alt="Preview" className="w-20 h-20 object-cover mt-2 rounded-full" />}
+            {image_url instanceof Blob && (
+  <img src={URL.createObjectURL(image_url)} alt="Preview" className="w-20 h-20 object-cover mt-2 rounded-full" />
+)}
+
           </div>
 
           <button type="submit" className="w-full bg-gray-300 text-[#001B41] font-bold p-2 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50">

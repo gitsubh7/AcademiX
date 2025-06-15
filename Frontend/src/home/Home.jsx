@@ -386,25 +386,73 @@ useEffect(() => {
     // === CODING PROFILES === //
     if (activePage === "Coding Profiles") {
       return (
+    <div className="p-6  min-h-screen">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Coding Profiles</h2>
+
+      {/* Profile Cards */}
+      <div className="bg-white p-6 rounded-xl shadow-md mb-10">
+        <div className="flex justify-center gap-6">
+          {[
+            { img: Leet, name: "LeetCode" },
+            { img: Geek, name: "GeeksforGeeks" },
+            { img: Code, name: "Codeforces" },
+          ].map((p) => (
+            <div
+              key={p.name}
+              className="bg-[#202060] text-white rounded-xl p-4 w-52 text-center shadow-lg"
+            >
+              <img
+                src={p.img}
+                alt={p.name}
+                className="w-20 h-20 mx-auto mb-4 object-contain"
+              />
+              <div className="text-sm space-y-1">
+                <p>No. of Questions:-</p>
+                <p>No. of Contests:-</p>
+                <p>Ratings:-</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Leaderboard Section */}
+      <div className="text-gray-800 italic mb-2 text-center">
+        Leaderboard unlocked! Are you #1? 🔥
+      </div>
+
+      <div className="grid grid-cols-2 gap-10">
+        {/* LeetCode Leaderboard */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Coding Profiles</h2>
-          <div className="flex gap-4">
-            {[
-              { img: Leet, name: "LeetCode" },
-              { img: Geek, name: "GeeksforGeeks" },
-              { img: Code, name: "Codeforces" },
-            ].map((p) => (
-              <div key={p.name} className="bg-[#202060] text-white rounded-lg p-4 w-52 text-center">
-                <img src={p.img} alt={p.name} className="w-24 h-24 mx-auto mb-2" />
-                <div className="text-sm">
-                  <p>No. of Questions:-</p>
-                  <p>No. of Contests:-</p>
-                  <p>Rating:-</p>
-                </div>
+          <h3 className="font-bold text-lg text-gray-700 mb-2">LeetCode</h3>
+          <div className="space-y-3">
+            {[...Array(6)].map((_, idx) => (
+              <div
+                key={idx}
+                className={`flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm`}
+              >
+                <span className="text-gray-600 font-bold mr-3">{idx + 1}.</span>
+                <div className="w-6 h-6 bg-[#1D4ED8] rounded-full mr-3" />
+                <span className="text-gray-700">User Name</span>
               </div>
             ))}
           </div>
         </div>
+
+        {/* CodeForces Leaderboard */}
+        <div>
+          <h3 className="font-bold text-lg text-gray-700 mb-2">CodeForces</h3>
+          <div className="space-y-3">
+            {[...Array(6)].map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-10 bg-[#D9EFFF] rounded-full px-4 py-2 flex items-center shadow-sm`}
+              ></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
       );
     }
 
@@ -457,7 +505,7 @@ useEffect(() => {
         </div>
         <Button onClick={handleLogout} className="text-white">Logout</Button>
       </aside>
-      <main className="flex-1 bg-[#B3D5E1] p-8 overflow-auto">
+      <main className="flex-1 bg-[#B3D4F1] p-8 overflow-auto">
         {renderMainContent()}
       </main>
     </div>
