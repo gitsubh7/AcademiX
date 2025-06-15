@@ -3,7 +3,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Logo from "../assets/Logo.png";
 import Leet from "../assets/Leet.png";
-import Geek from "../assets/Geek.png";
+import Gitlogo from"../assets/Gitlogo.png";
 import Code from "../assets/Code.png";
 import WeatherCard from "../WeatherSection/WeatherCard";
 import { startGoogleLogin } from "../utils/googleAuth";
@@ -161,6 +161,7 @@ if (errorMsg.includes("Google token expired")) {
   );
 };
 
+
 /*********************************
  *  MAIN DASHBOARD COMPONENT
  *********************************/
@@ -300,6 +301,25 @@ useEffect(() => {
   const { userState } = useUserContext();
   const firstName = userState?.name?.split(" ")[0] || "there";
 
+  const [leetData, setLeetData] = useState(null);
+  const [githubData, setGithubData] = useState(null);
+  const [codeforcesData, setCodeforcesData] = useState(null);
+
+  useEffect(() => {
+    if (activePage === "Coding Profiles") {
+      Promise.all([
+        axios.get("/api/v1/student/leetcode/<username>"),     // Replace <username> with actual username or use from context
+        axios.get("/api/v1/student/github/<username>"),
+        axios.get("/api/v1/student/codeforces/<username>"),
+      ])
+        .then(([leet, git, cf]) => {
+          setLeetData(leet.data.data);
+          setGithubData(git.data.data);
+          setCodeforcesData(cf.data.data);
+        })
+        .catch((err) => console.error("Error fetching coding data", err));}
+    },[activePage]);
+
   /************ MAIN CONTENT ************/
   const renderMainContent = () => {
     // === DOCUMENTS === //
@@ -386,35 +406,51 @@ useEffect(() => {
     // === CODING PROFILES === //
     if (activePage === "Coding Profiles") {
       return (
-    <div className="p-6  min-h-screen">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Coding Profiles</h2>
+     <div className="p-6 min-h-screen">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+          Coding Profiles
+        </h2>
 
-      {/* Profile Cards */}
-      <div className="bg-white p-6 rounded-xl shadow-md mb-10">
-        <div className="flex justify-center gap-6">
-          {[
-            { img: Leet, name: "LeetCode" },
-            { img: Geek, name: "GeeksforGeeks" },
-            { img: Code, name: "Codeforces" },
-          ].map((p) => (
-            <div
-              key={p.name}
-              className="bg-[#202060] text-white rounded-xl p-4 w-52 text-center shadow-lg"
-            >
-              <img
-                src={p.img}
-                alt={p.name}
-                className="w-20 h-20 mx-auto mb-4 object-contain"
-              />
-              <div className="text-sm space-y-1">
-                <p>No. of Questions:-</p>
-                <p>No. of Contests:-</p>
-                <p>Ratings:-</p>
+        <div className="bg-white p-6 rounded-xl shadow-md mb-10">
+          <div className="flex justify-center gap-6">
+            {[
+              { img: Leet, name: "LeetCode" },
+              { img: Gitlogo, name: "GitHub" },
+              { img: Code, name: "Codeforces" },
+            ].map((p) => (
+              <div
+                key={p.name}
+                className="bg-[#202060] text-white rounded-xl p-4 w-52 text-center shadow-lg"
+              >
+                <img
+                  src={p.img}
+                  alt={p.name}
+                  className="w-20 h-20 mx-auto mb-4 object-contain"
+                />
+                {p.name === "LeetCode" && (
+                  <div className="text-sm space-y-1">
+                    <p>Questions Solved: {leetData?.totalSolved ?? "—"}</p>
+                    <p>Ranking: {leetData?.ranking ?? "—"}</p>
+                  </div>
+                )}
+                {p.name === "GitHub" && (
+                  <div className="text-sm space-y-1">
+                    <p>Public Repos: {githubData?.public_repos ?? "—"}</p>
+                    <p>Total Commits: {githubData?.commits ?? "—"}</p>
+                    <p>Followers: {githubData?.followers ?? "—"}</p>
+                  </div>
+                )}
+                {p.name === "Codeforces" && (
+                  <div className="text-sm space-y-1">
+                    <p>Rating: {codeforcesData?.rating ?? "—"}</p>
+                    <p>Max Rating: {codeforcesData?.maxRating ?? "—"}</p>
+                    <p>Rank: {codeforcesData?.rank ?? "—"}</p>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
       {/* Leaderboard Section */}
       <div className="text-gray-800 italic mb-2 text-center">
