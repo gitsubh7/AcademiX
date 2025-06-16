@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import Logo from "../assets/Logo.png";
-import Leet from "../assets/Leet.png";
-import Gitlogo from"../assets/Gitlogo.png";
-import Code from "../assets/Code.png";
 import WeatherCard from "../WeatherSection/WeatherCard";
 import { startGoogleLogin } from "../utils/googleAuth";
+import CodingProfiles from "../pages/CodingProfiles";   // adjust the path
+
+
 import { useUserContext } from "../context/userContext.jsx";
+
 
 /*********************************
  *  SMALL RE‑USABLE BUTTON
@@ -32,6 +33,8 @@ function getAccessToken() {
 function getRefreshToken() {
   return localStorage.getItem("gRefresh") || "";
 }
+
+
 
 const AddClassForm = ({ onClose }) => {
   const [form, setForm] = useState({
@@ -301,24 +304,6 @@ useEffect(() => {
   const { userState } = useUserContext();
   const firstName = userState?.name?.split(" ")[0] || "there";
 
-  const [leetData, setLeetData] = useState(null);
-  const [githubData, setGithubData] = useState(null);
-  const [codeforcesData, setCodeforcesData] = useState(null);
-
-  useEffect(() => {
-    if (activePage === "Coding Profiles") {
-      Promise.all([
-        axios.get("/api/v1/student/leetcode/<username>"),     // Replace <username> with actual username or use from context
-        axios.get("/api/v1/student/github/<username>"),
-        axios.get("/api/v1/student/codeforces/<username>"),
-      ])
-        .then(([leet, git, cf]) => {
-          setLeetData(leet.data.data);
-          setGithubData(git.data.data);
-          setCodeforcesData(cf.data.data);
-        })
-        .catch((err) => console.error("Error fetching coding data", err));}
-    },[activePage]);
 
   /************ MAIN CONTENT ************/
   const renderMainContent = () => {
@@ -406,90 +391,9 @@ useEffect(() => {
     // === CODING PROFILES === //
     if (activePage === "Coding Profiles") {
       return (
-     <div className="p-6 min-h-screen">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-          Coding Profiles
-        </h2>
-
-        <div className="bg-white p-6 rounded-xl shadow-md mb-10">
-          <div className="flex justify-center gap-6">
-            {[
-              { img: Leet, name: "LeetCode" },
-              { img: Gitlogo, name: "GitHub" },
-              { img: Code, name: "Codeforces" },
-            ].map((p) => (
-              <div
-                key={p.name}
-                className="bg-[#202060] text-white rounded-xl p-4 w-52 text-center shadow-lg"
-              >
-                <img
-                  src={p.img}
-                  alt={p.name}
-                  className="w-20 h-20 mx-auto mb-4 object-contain"
-                />
-                {p.name === "LeetCode" && (
-                  <div className="text-sm space-y-1">
-                    <p>Questions Solved: {leetData?.totalSolved ?? "—"}</p>
-                    <p>Ranking: {leetData?.ranking ?? "—"}</p>
-                  </div>
-                )}
-                {p.name === "GitHub" && (
-                  <div className="text-sm space-y-1">
-                    <p>Public Repos: {githubData?.public_repos ?? "—"}</p>
-                    <p>Total Commits: {githubData?.commits ?? "—"}</p>
-                    <p>Followers: {githubData?.followers ?? "—"}</p>
-                  </div>
-                )}
-                {p.name === "Codeforces" && (
-                  <div className="text-sm space-y-1">
-                    <p>Rating: {codeforcesData?.rating ?? "—"}</p>
-                    <p>Max Rating: {codeforcesData?.maxRating ?? "—"}</p>
-                    <p>Rank: {codeforcesData?.rank ?? "—"}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-      {/* Leaderboard Section */}
-      <div className="text-gray-800 italic mb-2 text-center">
-        Leaderboard unlocked! Are you #1? 🔥
-      </div>
-
-      <div className="grid grid-cols-2 gap-10">
-        {/* LeetCode Leaderboard */}
-        <div>
-          <h3 className="font-bold text-lg text-gray-700 mb-2">LeetCode</h3>
-          <div className="space-y-3">
-            {[...Array(6)].map((_, idx) => (
-              <div
-                key={idx}
-                className={`flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm`}
-              >
-                <span className="text-gray-600 font-bold mr-3">{idx + 1}.</span>
-                <div className="w-6 h-6 bg-[#1D4ED8] rounded-full mr-3" />
-                <span className="text-gray-700">User Name</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CodeForces Leaderboard */}
-        <div>
-          <h3 className="font-bold text-lg text-gray-700 mb-2">CodeForces</h3>
-          <div className="space-y-3">
-            {[...Array(6)].map((_, idx) => (
-              <div
-                key={idx}
-                className={`h-10 bg-[#D9EFFF] rounded-full px-4 py-2 flex items-center shadow-sm`}
-              ></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-      );
+      <div>
+      <CodingProfiles />
+    </div>)
     }
 
     // === UPLOAD DOCS === //

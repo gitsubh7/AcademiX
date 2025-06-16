@@ -315,9 +315,11 @@ export const getAttendance =asyncHandler(async(req,res,next)=>{
 
 export const getGithubProfile = asyncHandler(async (req, res, next) => {
   const { username } = req.params;
+  console.log(username)
   const url = `https://api.github.com/users/${username}`;
 
     const response = await axios.get(url);
+    console.log(response)
     if (!response.data) throw new apiError(404, "GitHub profile not found");
 
 
