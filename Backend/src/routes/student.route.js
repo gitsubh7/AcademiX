@@ -1,20 +1,21 @@
 import { Router } from "express";
 import {upload} from "../middlewares/multer.js"
-import {registerStudent,loginStudent,logoutStudent, updateStudent, updateProfileImage,markAbsent,markPresent,getAttendance,removeCourse,editCourse,addCourse} from "../controllers/student.controller.js"
 import {verifyJWT} from "../middlewares/auth.js"
-import { changePassword,requestPasswordReset,passwordReset } from "../controllers/student.controller.js"
-import {getGithubProfile,getCodeforcesProfile,getLeetCodeProfile} from "../controllers/student.controller.js"
-import {googleAuth,redirectGoogleAuth} from "../controllers/student.controller.js"
-import {addClass} from "../controllers/student.controller.js"
-import {uploadDocument} from "../controllers/student.controller.js"
-import { getAllDocuments } from "../controllers/student.controller.js";
-import { deleteDocument } from "../controllers/student.controller.js";
-import {getCodeForcesRankings,getLeetCodeRankingsC,getLeetCodeRankingsQ} from "../controllers/student.controller.js"
+
+
+import { registerStudent, loginStudent, logoutStudent, updateStudent, updateProfileImage,changePassword,requestPasswordReset,passwordReset } from "../controllers/student.controller.js";
+import { addCourse, editCourse, removeCourse ,markAbsent,markPresent,getAttendance} from "../controllers/attendance.controller.js";
+import { getAllDocuments,deleteDocument,uploadDocument } from "../controllers/document.controller.js";
+import { googleAuth,redirectGoogleAuth,addClass } from "../controllers/calendar.controller.js";
+import { getGithubProfile, getCodeforcesProfile, getLeetCodeProfile,getLeetCodeRankingsC,getCodeForcesRankings,getLeetCodeRankingsQ } from "../controllers/coding.controller.js";
+
+
 
 export const studentRouter = Router();
 studentRouter.route("/register").post(
     upload.single("image_url"),registerStudent
 )
+
 
 //login,logout
 studentRouter.route("/login").post(loginStudent)
@@ -62,7 +63,7 @@ studentRouter.route("/getAllDocuments").get(verifyJWT,getAllDocuments)
 studentRouter.route("/deleteDocument/:id").delete(verifyJWT,deleteDocument)
 
 
-//global routes
+//ranking routes
 
 studentRouter.route("/codeForcesRankings").get(getCodeForcesRankings)
 studentRouter.route("/leetcodeRankingsC").get(getLeetCodeRankingsC)
