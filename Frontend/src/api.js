@@ -30,6 +30,14 @@ api.interceptors.request.use((config) => {
 export const fetchLeetCode   = (username) => api.get(`/leetcode/${username}`);
 export const fetchCodeforces = (username) => api.get(`/codeforces/${username}`);
 export const fetchGitHub     = (username) => api.get(`/github/${username}`);
+export const getLeetRankByQuestions = () =>
+  api.get("/leetcodeRankingsQ");     // returns array of users
+
+export const getLeetRankByRating = () =>
+  api.get("/leetcodeRankingsC");
+
+export const getCFRankings = () =>
+  api.get("/codeforcesRankings");
 
 /* -------------------------------------------------
    4. (Optional) default export for ad‑hoc calls

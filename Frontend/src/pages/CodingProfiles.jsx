@@ -1,6 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
-import { fetchLeetCode, fetchGitHub, fetchCodeforces } from "../api";
+import { fetchLeetCode, fetchGitHub, fetchCodeforces ,getLeetRankByQuestions,
+  getLeetRankByRating,
+  getCFRankings } from "../api";
 // … your logo imports
 import Leet from "../assets/Leet.png";
 import Gitlogo from"../assets/Gitlogo.jpeg";
@@ -11,6 +13,9 @@ const CodingProfiles = () => {
   const [githubData, setGithubData]         = useState(null);
   const [codeforcesData, setCodeforcesData] = useState(null);
   const [loading, setLoading]               = useState({});   // keeps track of fetches
+  const [leetRankByQ, setLeetRankByQ] = useState([]);
+  const [leetRankByR, setLeetRankByR] = useState([]);
+  const [codeforcesRank, setCodeforcesRank] = useState([]);
 
   const [usernames, setUsernames] = useState({
     LeetCode:   "",
@@ -48,8 +53,27 @@ const CodingProfiles = () => {
   /** helper so each input only changes its own value ------------------- */
   const updateName = (platform, value) =>
     setUsernames(prev => ({ ...prev, [platform]: value }));
+  const symbolForRank = (idx) =>
+    idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
 
   /** ------------------------------------------------------------------- */
+  useEffect(() => {
+  (async () => {
+    try {
+      const [leetQ, leetR, cf] = await Promise.all([
+        getLeetRankByQuestions(),
+        getLeetRankByRating(),
+        getCFRankings(),
+      ]);
+      setLeetRankByQ(leetQ.data.message);
+      setLeetRankByR(leetR.data.message);
+      setCodeforcesRank(cf.data.message);
+    } catch (err) {
+      console.error("Leaderboard fetch failed:", err);
+    }
+  })();
+}, []);
+
   return (
     <div className="p-6 min-h-screen">
       <h2 className="text-2xl font-semibold mb-6 text-gray-800">Coding Profiles</h2>
@@ -116,37 +140,82 @@ const CodingProfiles = () => {
         Leaderboard unlocked! Are you #1? 🔥
       </div>
 
-      <div className="grid grid-cols-2 gap-10">
-        {/* LeetCode Leaderboard */}
+      <div className="grid grid-cols-3 gap-10">
+        {/* LeetCode – Questions Solved */}
         <div>
-          <h3 className="font-bold text-lg text-gray-700 mb-2">LeetCode</h3>
-          <div className="space-y-3">
-            {[...Array(6)].map((_, idx) => (
+          <h3 className="font-bold text-lg text-gray-700 mb-2">LeetCode – Questions Solved</h3>
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
+            {leetRankByQ.map((user, idx) => (
               <div
                 key={idx}
-                className={`flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm`}
+                className="flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm"
               >
-                <span className="text-gray-600 font-bold mr-3">{idx + 1}.</span>
-                <div className="w-6 h-6 bg-[#1D4ED8] rounded-full mr-3" />
-                <span className="text-gray-700">User Name</span>
+                <span className="text-gray-600 font-bold mr-3 w-8 text-center">
+                  {symbolForRank(idx)}
+                </span>
+                <img
+                  src={user.image_url}
+                  alt="avatar"
+                  className="w-6 h-6 rounded-full mr-3"
+                />
+                <span className="text-gray-700">
+                  {user.name} – {user.questions_solved}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* CodeForces Leaderboard */}
+        {/* LeetCode – Contest Rating */}
         <div>
-          <h3 className="font-bold text-lg text-gray-700 mb-2">CodeForces</h3>
-          <div className="space-y-3">
-            {[...Array(6)].map((_, idx) => (
+          <h3 className="font-bold text-lg text-gray-700 mb-2">LeetCode – Contest Rating</h3>
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
+            {leetRankByR.map((user, idx) => (
               <div
                 key={idx}
-                className={`h-10 bg-[#D9EFFF] rounded-full px-4 py-2 flex items-center shadow-sm`}
-              ></div>
+                className="flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm"
+              >
+                <span className="text-gray-600 font-bold mr-3 w-8 text-center">
+                  {symbolForRank(idx)}
+                </span>
+                <img
+                  src={user.image_url}
+                  alt="avatar"
+                  className="w-6 h-6 rounded-full mr-3"
+                />
+                <span className="text-gray-700">
+                  {user.name} – {user.contest_rating}
+                </span>
+              </div>
             ))}
           </div>
         </div>
-      </div>
+
+        {/* Codeforces – Rating */}
+        <div>
+          <h3 className="font-bold text-lg text-gray-700 mb-2">Codeforces</h3>
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
+            {codeforcesRank.map((user, idx) => (
+              <div
+                key={idx}
+                className="flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm"
+              >
+                <span className="text-gray-600 font-bold mr-3 w-8 text-center">
+                  {symbolForRank(idx)}
+                </span>
+          <img
+            src={user.image_url}
+            alt="avatar"
+            className="w-6 h-6 rounded-full mr-3"
+          />
+          <span className="text-gray-700">
+            {user.name} – {user.contest_rating}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
     </div>
   );
 };
