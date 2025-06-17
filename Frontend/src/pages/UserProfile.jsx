@@ -25,7 +25,7 @@ const UserProfile = () => {
     if (!token) return;
 
     axios
-      .get("http://localhost:3000/api/v1/student/me", {
+      .get("http://localhost:3000/api/v1/student/getStudent", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
