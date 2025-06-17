@@ -562,13 +562,16 @@ const AcademiXDashboard = () => {
           </div>
 
           <nav className="flex flex-col gap-4">
-            {["Dashboard", "Add Attendance", "Coding Profiles", "Upload Docs"].map(
+            {["Dashboard", "Add Attendance", "Coding Profiles", "Upload Docs" ].map(
               (btn) => (
                 <Button
-                  key={btn}
-                  className="justify-start"
-                  onClick={() => setActivePage(btn)}
-                >
+      key={btn}
+      className="justify-start"
+      onClick={() => {
+        setActivePage(btn);
+        if (btn === "Dashboard") setShowDocuments(false); // 👈 reset documents view
+      }}
+    >
                   {btn}
                 </Button>
               )
