@@ -16,12 +16,27 @@ const CodingProfiles = () => {
   const [leetRankByQ, setLeetRankByQ] = useState([]);
   const [leetRankByR, setLeetRankByR] = useState([]);
   const [codeforcesRank, setCodeforcesRank] = useState([]);
+  const LS_KEY = "codingProfiles.usernames";
 
-  const [usernames, setUsernames] = useState({
-    LeetCode:   "",
-    GitHub:     "",
-    Codeforces: "",
-  });
+const saveUsernames = (obj) => {
+  localStorage.setItem(LS_KEY, JSON.stringify(obj));
+};
+
+const loadUsernames = () => {
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY)) || {
+      LeetCode: "",
+      GitHub: "",
+      Codeforces: "",
+    };
+  } catch {
+    return { LeetCode: "", GitHub: "", Codeforces: "" };
+  }
+};
+
+
+ const [usernames, setUsernames] = useState(loadUsernames());
+
     
   /** fetch on demand, per‑platform ------------------------------------- */
   const handleFetch = useCallback(async platform => {
@@ -51,8 +66,13 @@ const CodingProfiles = () => {
   }, [usernames]);
 
   /** helper so each input only changes its own value ------------------- */
-  const updateName = (platform, value) =>
-    setUsernames(prev => ({ ...prev, [platform]: value }));
+  const updateName = (platform, value) => {
+  setUsernames((prev) => {
+    const next = { ...prev, [platform]: value };
+    saveUsernames(next);          // 👈 write to storage
+    return next;
+  });
+};
   const symbolForRank = (idx) =>
     idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
 
@@ -73,6 +93,14 @@ const CodingProfiles = () => {
     }
   })();
 }, []);
+
+useEffect(() => {
+  // kick off fetches for whichever usernames are already stored
+  ["LeetCode", "GitHub", "Codeforces"].forEach((p) => {
+    if (usernames[p]) handleFetch(p);
+  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);   
 
   return (
     <div className="p-6 min-h-screen">

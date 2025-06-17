@@ -33,7 +33,15 @@ function getAccessToken() {
 function getRefreshToken() {
   return localStorage.getItem("gRefresh") || "";
 }
+const clearClientStorage = () => {
+  // tokens you saved for Axios
+  localStorage.removeItem("gAccess");
+  localStorage.removeItem("gRefresh");
 
+  // usernames for Coding Profiles
+  localStorage.removeItem("codingProfiles.usernames");
+
+};
 
 
 const AddClassForm = ({ onClose }) => {
@@ -211,6 +219,8 @@ useEffect(() => {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Logout failed");
+       clearClientStorage();
+       resetUserState();  
       window.location.href = "/login";
     } catch {
       setError("Logout failed. Please try again.");
@@ -301,7 +311,7 @@ useEffect(() => {
     };
     return icons[ext] || "📁";
   };
-  const { userState } = useUserContext();
+  const {userState , resetUserState } = useUserContext();
   const firstName = userState?.name?.split(" ")[0] || "there";
 
 

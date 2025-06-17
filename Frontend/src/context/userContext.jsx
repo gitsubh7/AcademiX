@@ -206,7 +206,15 @@ const loginUser = async (e) => {
     setUserState(prev => ({ ...prev, [name]: value }));
   };
 
-  const resetUserState = () => setUserState(EMPTY_FORM);
+  const resetUserState = () => {
+  // 1️⃣ wipe React state
+  setUserState(EMPTY_FORM);
+
+  // 2️⃣ wipe browser storage (only keys you really set)
+  localStorage.removeItem("gAccess");
+  localStorage.removeItem("gRefresh");
+  };
+
 
   /* ---------------- PROVIDER VALUE ---------------- */
   return (

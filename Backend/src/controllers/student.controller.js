@@ -106,23 +106,34 @@ export const loginStudent = asyncHandler(async(req,res,next)=>{
 
 })
 
-export const logoutStudent = asyncHandler(async(req,res,next)=>{
-  await Student.findByIdAndUpdate(req.user._id,{
-    $set:{
-      refreshToken:undefined
-    }},
-    {new:true})
-  const options={
-    httpOnly:true,
-    secure:true,
-    sameSite:"None",
-  }
-  res.status(200)
-  .clearCookie("accessToken",options)
-  .clearCookie("refreshToken",options)
-  .json(new apiResponse(200,{},"User logged out successfully"));
+export const logoutStudent = asyncHandler(async (req, res, next) => {
+  try {
+    console.log("Logout Request User:", req.user);
 
-})
+    if (!req.user || !req.user._id) {
+      return res.status(401).json(new apiResponse(401, {}, "Unauthorized: No user found"));
+    }
+
+    await Student.findByIdAndUpdate(req.user._id, {
+      $set: { refreshToken: undefined },
+    }, { new: true });
+
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // true only in prod
+      sameSite: "None",
+    };
+
+    res.status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json(new apiResponse(200, {}, "User logged out successfully"));
+  } catch (error) {
+    console.error("Logout error:", error); // 👈 log for debugging
+    res.status(500).json(new apiResponse(500, {}, "Internal Server Error"));
+  }
+});
+
 
 export const updateStudent=asyncHandler(async(req,res,next)=>{
   const studentId = req.user._id
