@@ -10,6 +10,7 @@ import Logo from "../assets/Logo.png";
 import WeatherCard from "../WeatherSection/WeatherCard";
 import { startGoogleLogin } from "../utils/googleAuth";
 import CodingProfiles from "../pages/CodingProfiles";
+import UserProfile from "../pages/UserProfile";
 import { useUserContext } from "../context/userContext.jsx";
 
 /* -------------------------------------------------------------------------- */
@@ -417,6 +418,8 @@ const AcademiXDashboard = () => {
       );
     }
 
+     if (activePage === "User Profile") return <UserProfile />;
+
     /* ---------- Main dashboard ---------- */
     if (activePage === "Dashboard") {
       return (
@@ -493,6 +496,10 @@ const AcademiXDashboard = () => {
       return <CodingProfiles />;
     }
 
+    if(activePage==="Add Attendance"){
+       return 
+    }
+
     /* ---------- Upload Docs form ---------- */
     if (activePage === "Upload Docs") {
       return (
@@ -555,43 +562,54 @@ const AcademiXDashboard = () => {
 
       {/* Sidebar */}
       <aside className="bg-[#0C1D4F] text-white w-64 p-4 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-8">
-            <img src={Logo} alt="Logo" className="w-24 h-24" />
-            <h1 className="text-2xl font-bold text-[#55A2D3]">AcademiX</h1>
-          </div>
+  <div>
+    {/* Logo and Title */}
+    <div className="flex items-start gap-2 mb-8">
+      <img src={Logo} alt="Logo" className="w-20 h-20 mt-1" />
+      <h1 className="text-3xl font-bold text-[#55A2D3] leading-tight mt-2">AcademiX</h1>
+    </div>
 
-          <nav className="flex flex-col gap-4">
-            {["Dashboard", "Add Attendance", "Coding Profiles", "Upload Docs" ].map(
-              (btn) => (
-                <Button
-      key={btn}
-      className="justify-start"
-      onClick={() => {
-        setActivePage(btn);
-        if (btn === "Dashboard") setShowDocuments(false); // 👈 reset documents view
-      }}
-    >
-                  {btn}
-                </Button>
-              )
-            )}
+    <nav className="flex flex-col gap-4">
+      {/* User Profile Button */}
+      <Button
+        className="justify-start"
+        onClick={() => setActivePage("User Profile")}
+      >
+        User Profile
+      </Button>
 
-            <Button
-              className="justify-start"
-              onClick={() => {
-                setActivePage("Dashboard");
-                setShowDocuments(true);
-                fetchDocuments();
-              }}
-            >
-              Get Documents
-            </Button>
-          </nav>
-        </div>
+      {/* Main Sidebar Buttons */}
+      {["Dashboard", "Add Attendance", "Coding Profiles", "Upload Docs"].map(
+        (btn) => (
+          <Button
+            key={btn}
+            className="justify-start"
+            onClick={() => {
+              setActivePage(btn);
+              if (btn === "Dashboard") setShowDocuments(false);
+            }}
+          >
+            {btn}
+          </Button>
+        )
+      )}
 
-        <Button onClick={handleLogout}>Logout</Button>
-      </aside>
+      {/* Get Documents Button */}
+      <Button
+        className="justify-start"
+        onClick={() => {
+          setActivePage("Dashboard");
+          setShowDocuments(true);
+          fetchDocuments();
+        }}
+      >
+        Get Documents
+      </Button>
+    </nav>
+  </div>
+
+  <Button onClick={handleLogout}>Logout</Button>
+</aside>
 
       {/* Main panel */}
       <main className="flex-1 bg-[#B3D4F1] p-8 overflow-auto">

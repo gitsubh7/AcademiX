@@ -126,6 +126,15 @@ export const logoutStudent = asyncHandler(async (req, res, next) => {
     res.status(500).json(new apiResponse(500, {}, "Internal Server Error"));
   }
 });
+export const getCurrentStudent = asyncHandler(async (req, res, next) => {
+  const studentId = req.user._id;
+
+  const student = await Student.findById(studentId).select("-password -refreshToken");
+  if (!student) throw new apiError(404, "Student not found");
+
+  res.status(200).json(new apiResponse(200, { user: student }, "Student profile fetched successfully"));
+});
+
 
 
 export const updateStudent=asyncHandler(async(req,res,next)=>{

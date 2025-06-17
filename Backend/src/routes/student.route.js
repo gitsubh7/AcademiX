@@ -3,7 +3,7 @@ import {upload} from "../middlewares/multer.js"
 import {verifyJWT} from "../middlewares/auth.js"
 
 
-import { registerStudent, loginStudent, logoutStudent, updateStudent, updateProfileImage,changePassword,requestPasswordReset,passwordReset } from "../controllers/student.controller.js";
+import { registerStudent, loginStudent, logoutStudent, updateStudent, updateProfileImage,changePassword,requestPasswordReset,passwordReset,getCurrentStudent} from "../controllers/student.controller.js";
 import { addCourse, editCourse, removeCourse ,markAbsent,markPresent,getAttendance} from "../controllers/attendance.controller.js";
 import { getAllDocuments,deleteDocument,uploadDocument } from "../controllers/document.controller.js";
 import { googleAuth,redirectGoogleAuth,addClass } from "../controllers/calendar.controller.js";
@@ -23,6 +23,7 @@ studentRouter.route('/logout').post(verifyJWT,logoutStudent)
 
 
 //update student routes
+studentRouter.route("/me") .get(verifyJWT, getCurrentStudent);
 studentRouter.route("/updateStudent").post(verifyJWT,updateStudent)
 studentRouter.route("/updateProfileImage").post(verifyJWT,upload.single("image_url"),updateProfileImage)
 
