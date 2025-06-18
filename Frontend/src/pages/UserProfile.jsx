@@ -3,14 +3,14 @@ import axios from "axios";
 import { useUserContext } from "../context/userContext.jsx";
 import placeholder from "../assets/placeholder-avatar.png";  // npadd a 1‑line grey circle PNG
 import { Button } from "@/components/ui/button";
-import { LogOut, PenSquare, KeyRound, UploadCloud } from "lucide-react";
+import { PenSquare, KeyRound, UploadCloud } from "lucide-react";
 
 /**
  * Renders the logged‑in user's profile with Edit/Change‑Password actions
  * and an optional avatar uploader.
  */
 const UserProfile = () => {
-  const { userState, setUserState, resetUserState } = useUserContext();
+  const { userState, setUserState } = useUserContext();
   const [profile, setProfile] = useState(userState.user ?? null);
 
   /* ------------------------------------------------------------
@@ -22,7 +22,12 @@ const UserProfile = () => {
     if (profile) return;
 
     const token = localStorage.getItem("accessToken");
-    if (!token) return;
+  if (!token) {
+    console.error("No access token found in localStorage.");
+    return;
+  }
+
+  console.log("Using accessToken:", token);
 
     axios
       .get("http://localhost:3000/api/v1/student/getStudent", {
@@ -36,30 +41,54 @@ const UserProfile = () => {
       .catch((err) => console.error(err));
   }, [profile, setUserState]);
 
-  /* ------------------------------------------------------------
-     2️⃣  Handlers
-  ------------------------------------------------------------ */
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    resetUserState();
-    window.location.href = "/"; // or use react‑router navigate("/")
-  };
+  /* ---------- avatar uploader ---------- */
+const handleProfileImageUpload = async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-  const handleProfileImageUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const token = localStorage.getItem("accessToken");
+  if (!token) return;                     // user is not logged‑in
 
-    const formData = new FormData();
-    formData.append("image_url", file);
+  const formData = new FormData();
+  formData.append("image_url", file);     // ← field name matches Multer
 
-    axios
-      .post("http://localhost:3000/api/v1/student/updateProfileImage", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        Authorization: `Bearer ${token}`,
-      })
-      .then((res) => setProfile((p) => ({ ...p, avatar: res.data.url })))
-      .catch(console.error);
-  };
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/api/v1/student/updateProfileImage",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    /* your apiResponse wrapper is:
+       { statusCode, message, data: <student> } */
+    const updatedUser = response.data?.data;
+    if (!updatedUser?.image_url) {
+      throw new Error("Backend returned no image_url");
+    }
+
+    /* 1️⃣  update local component state so <img> re‑renders immediately */
+    setProfile(updatedUser);
+
+    /* 2️⃣  update global context for the rest of the app */
+    if (typeof setUserState === "function") {
+      setUserState((prev) => ({ ...prev, user: updatedUser }));
+    }
+
+    /* 3️⃣  persist session so a page refresh keeps the new picture */
+    localStorage.setItem("academixUser", JSON.stringify(updatedUser));
+  } catch (err) {
+    console.error(
+      "Image upload failed →",
+      err.response?.data || err.message || err
+    );
+  }
+};
+
 
   if (!profile) return <p className="p-8">Loading profile…</p>;
 
@@ -69,35 +98,27 @@ const UserProfile = () => {
   return (
     <div className="flex h-full">
       {/* 🔵 left rail (matches your dark sidebar colour) */}
-      <aside className="w-60 bg-[#001E50] text-white flex flex-col items-center p-6 gap-4">
-        <label htmlFor="avatarInput" className="relative cursor-pointer">
-          <img
-            src={profile.image_url|| placeholder}
-            alt="avatar"
-            className="w-32 h-32 rounded-full object-cover ring-2 ring-[#55A2D3]"
-          />
-          <input
-            type="file"
-            id="avatarInput"
-            accept="image/*"
-            className="hidden"
-            onChange={handleProfileImageUpload}
-          />
-          <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-xs bg-[#55A2D3] px-2 py-0.5 rounded">
-            <UploadCloud size={12} className="inline mr-1" />
-            Edit Profile Image
-          </span>
-        </label>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mt-auto"
-          onClick={handleLogout}
-        >
-          Logout
-          <LogOut size={14} className="ml-2" />
-        </Button>
+      <aside className="w-60 bg-[#B3D4F1] text-white flex flex-col items-center p-6 gap-4">
+        <label htmlFor="avatarInput" className="cursor-pointer">
+    <img
+      src={profile.image_url || placeholder}
+      alt="avatar"
+      className="w-32 h-32 rounded-full object-cover ring-2 ring-[#55A2D3]"
+    />
+    <input
+      type="file"
+      id="avatarInput"
+      accept="image/*"
+      className="hidden"
+      onChange={handleProfileImageUpload}
+    />
+  </label>
+  <label
+    htmlFor="avatarInput"
+    className="text-xs bg-[#55A2D3] px-2 py-0.5 rounded cursor-pointer text-white flex items-center gap-1"
+  >
+    <UploadCloud size={12} /> Edit Profile Image
+  </label>
       </aside>
 
       {/* 🔵 main profile panel  */}
@@ -144,7 +165,8 @@ const UserProfile = () => {
           </li>
         </ul>
 
-        <div className="flex gap-8 mt-12">
+        <div className="flex gap-8 mt-20">
+
           <Button>
             <PenSquare size={16} className="mr-2" /> Edit Profile
           </Button>
