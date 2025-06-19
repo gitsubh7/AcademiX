@@ -35,12 +35,22 @@ export const UserContextProvider = ({ children }) => {
      Load cached user (if any) on first render
   ----------------------------------------------------*/
   useEffect(() => {
-    const cached = JSON.parse(localStorage.getItem("academixUser"));
-    if (cached) {
-      setUserState(prev => ({ ...prev, ...cached }));
-    }
-  }, []);
+  const cachedUser   = localStorage.getItem("academixUser");
+  const cachedToken  = localStorage.getItem("accessToken");
 
+  if (cachedUser && cachedToken) {
+    const user = JSON.parse(cachedUser);
+
+    setUserState(prev => ({
+      ...prev,
+      user,               // 🔑 keep under `user`
+      isAuthenticated: true,
+    }));
+
+    // attach token globally so every axios call uses it
+    axios.defaults.headers.common["Authorization"] = `Bearer ${cachedToken}`;
+  }
+}, []);
   /* ---------------- REGISTER ---------------- */
   const registerUser = async (e) => {
     e.preventDefault();
@@ -127,12 +137,12 @@ const loginUser = async (e) => {
     }
 
     // 1) keep in context
-    setUserState(prev => ({ ...prev, ...loggedInUser, password: "" }));
+    setUserState(prev => ({ ...prev,  user: loggedInUser, password: "" }));
 
     // 2) cache so it survives reloads
     localStorage.setItem("academixUser", JSON.stringify(loggedInUser));
     // (optional) store tokens too if you need them later
-    localStorage.setItem("academixAccessToken", accessToken);
+    localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("academixRefreshToken", refreshToken);
 
     navigate("/home");
@@ -225,6 +235,7 @@ const loginUser = async (e) => {
       resetPassword,
       logoutUser,
       userState,
+      setUserState,
       handlerUserInput,
       resetUserState,
       loading,
