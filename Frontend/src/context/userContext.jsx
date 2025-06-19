@@ -35,22 +35,28 @@ export const UserContextProvider = ({ children }) => {
      Load cached user (if any) on first render
   ----------------------------------------------------*/
   useEffect(() => {
-  const cachedUser   = localStorage.getItem("academixUser");
-  const cachedToken  = localStorage.getItem("accessToken");
+  const token  = localStorage.getItem("accessToken");
 
-  if (cachedUser && cachedToken) {
-    const user = JSON.parse(cachedUser);
+  // ---------- safe JSON.parse ----------
+  let cachedUser = null;
+  const raw = localStorage.getItem("academixUser");
+  if (raw && raw !== "undefined") {
+    try { cachedUser = JSON.parse(raw); }
+    catch { localStorage.removeItem("academixUser"); }
+  }
+  // -------------------------------------
 
+  if (token && cachedUser) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setUserState(prev => ({
       ...prev,
-      user,               // 🔑 keep under `user`
+      user: cachedUser,
       isAuthenticated: true,
     }));
-
-    // attach token globally so every axios call uses it
-    axios.defaults.headers.common["Authorization"] = `Bearer ${cachedToken}`;
   }
 }, []);
+
+
   /* ---------------- REGISTER ---------------- */
   const registerUser = async (e) => {
     e.preventDefault();
@@ -130,8 +136,17 @@ const loginUser = async (e) => {
 
     /* ---------- NEW: pull user from the right place ---------- */
     // Your console log showed { data: { user, accessToken, refreshToken } }
-    const { user: loggedInUser, accessToken, refreshToken } = res.data.data || {};
+    const {
+   user:     loggedInUserRaw,
+   student:  loggedInStudentRaw,
+   accessToken,
+  refreshToken,
+} = res.data.data || {};
 
+ const loggedInUser = loggedInUserRaw || loggedInStudentRaw; // 👈 one of them
+ if (!loggedInUser) {
+   throw new Error("Backend returned no user/student object");
+}
     if (!loggedInUser) {
       throw new Error("No user object returned from backend");
     }

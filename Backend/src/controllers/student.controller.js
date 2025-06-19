@@ -137,17 +137,51 @@ export const getCurrentStudent = asyncHandler(async (req, res, next) => {
 
 
 
-export const updateStudent=asyncHandler(async(req,res,next)=>{
-  const studentId = req.user._id
-  if(!student) throw new apiError(404,"Student not found");
-  const {name,email,degree,department,section,roll_number,bio,year,passout_year,phone_number}=req.body;
-  const student = Student.findByIdAndUpdate(studentId,{
-    name,email,degree,department,section,roll_number,bio,year,passout_year,phone_number
-  },{new:true}).select("-password -refreshToken");
-  if(!student) throw new apiError(500,"Error updating student");
-  res.status(200).json(new apiResponse(200,"Student updated successfully",student));
+// controllers/studentController.ts
+export const updateStudent = asyncHandler(async (req, res, next) => {
+  const studentId = req.user._id;
 
-})
+  // destructure only the fields you allow to change
+  const {
+    name,
+    email,
+    degree,
+    department,
+    section,
+    roll_number,
+    bio,
+    year,
+    passout_year,
+    phone_number,
+  } = req.body;
+
+  // ✏️ 1) make sure the student exists
+  const exists = await Student.findById(studentId);
+  if (!exists) throw new apiError(404, "Student not found");
+
+  // ✏️ 2) perform the update
+  const student = await Student.findByIdAndUpdate(
+    studentId,
+    {
+      name,
+      email,
+      degree,
+      department,
+      section,
+      roll_number,
+      bio,
+      year,
+      passout_year,
+      phone_number,
+    },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  res
+    .status(200)
+    .json(new apiResponse(200, "Student updated successfully", student));
+});
+
 
 export const changePassword = asyncHandler(async(req,res,next)=>{
   const studentId = req.user._id

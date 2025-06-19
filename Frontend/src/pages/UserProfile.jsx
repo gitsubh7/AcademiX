@@ -1,17 +1,32 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Button } from "../components/Button";
 import { useUserContext } from "../context/userContext.jsx";
 import placeholder from "../assets/placeholder-avatar.png";  // npadd a 1‑line grey circle PNG
-import { Button } from "@/components/ui/button";
 import { PenSquare, KeyRound, UploadCloud } from "lucide-react";
-
+import { EditProfileForm, ChangePasswordForm } from "./Profile";
+import Dialog from "../components/Dailog";
 /**
  * Renders the logged‑in user's profile with Edit/Change‑Password actions
  * and an optional avatar uploader.
  */
 const UserProfile = () => {
   const { userState, setUserState } = useUserContext();
-  const [profile, setProfile] = useState(userState.user ?? null);
+  const getCachedUser = () => {
+  try {
+    const raw = localStorage.getItem("academixUser");
+    if (!raw || raw === "undefined") return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+};
+
+const [profile, setProfile] = useState(userState.user ?? getCachedUser());
+
+  const [showEdit, setShowEdit] = useState(false);
+   const [showPwd, setShowPwd] = useState(false);
+
 
   /* ------------------------------------------------------------
      1️⃣  If we don’t have the profile yet (e.g. page refresh) pull
@@ -19,27 +34,40 @@ const UserProfile = () => {
          whatever you named it). Re‑use the existing access token.
   ------------------------------------------------------------ */
   useEffect(() => {
-    if (profile) return;
+  const cachedToken = localStorage.getItem("accessToken");
 
-    const token = localStorage.getItem("accessToken");
-  if (!token) {
-    console.error("No access token found in localStorage.");
-    return;
+  if (!cachedToken) return;               // not logged in
+
+  // attach token for this request
+  axios.defaults.headers.common["Authorization"] = `Bearer ${cachedToken}`;
+
+  // immediately fetch fresh profile
+  (async () => {
+    try {
+      const { data } = await axios.get("http://localhost:3000/api/v1/student/getStudent");
+
+      const freshUser = data.data.student;       // adjust if your API wraps it differently
+      setUserState(prev => ({ ...prev, user: freshUser, isAuthenticated: true }));
+      localStorage.setItem("academixUser", JSON.stringify(freshUser));
+    } catch (err) {
+      console.error("Failed to fetch profile:", err);
+      // optional: logout or clear bad token
+    }
+  })();
+}, []);
+
+useEffect(() => {
+  const fallback = getCachedUser();
+  if (!userState.user && fallback) {
+    setUserState(prev => ({ ...prev, user: fallback, isAuthenticated: true }));
   }
+}, []);
 
-  console.log("Using accessToken:", token);
-
-    axios
-      .get("http://localhost:3000/api/v1/student/getStudent", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        setProfile(res.data.user);
-        // push into global context so other pages get it too
-        setUserState((prev) => ({ ...prev, user: res.data.user }));
-      })
-      .catch((err) => console.error(err));
-  }, [profile, setUserState]);
+useEffect(() => {
+    if (userState.user) {
+      setProfile(userState.user);
+    }
+  }, [userState.user]);    
 
   /* ---------- avatar uploader ---------- */
 const handleProfileImageUpload = async (e) => {
@@ -66,7 +94,7 @@ const handleProfileImageUpload = async (e) => {
 
     /* your apiResponse wrapper is:
        { statusCode, message, data: <student> } */
-    const updatedUser = response.data?.data;
+    const updatedUser = response.data?.data.student;
     if (!updatedUser?.image_url) {
       throw new Error("Backend returned no image_url");
     }
@@ -88,9 +116,14 @@ const handleProfileImageUpload = async (e) => {
     );
   }
 };
+ 
+if (!localStorage.getItem("accessToken")) {
+  return <div className="p-8">You are not logged in.</div>; // or <Navigate to="/login" />
+}
 
 
-  if (!profile) return <p className="p-8">Loading profile…</p>;
+  if (!profile) return <div className="p-8">Loading profile…</div>;
+
 
   /* ------------------------------------------------------------
      3️⃣  UI
@@ -166,15 +199,34 @@ const handleProfileImageUpload = async (e) => {
         </ul>
 
         <div className="flex gap-8 mt-20">
-
-          <Button>
-            <PenSquare size={16} className="mr-2" /> Edit Profile
+  <Button
+            onClick={() => setShowEdit(true)}
+            className="bg-[#0C1D4F] text-white hover:bg-[#092041] flex items-center"
+          >
+            <PenSquare size={16} className="mr-2" />
+            Edit Profile
           </Button>
-          <Button variant="outline">
-            <KeyRound size={16} className="mr-2" /> Change Password
+          <Button
+            onClick={() => setShowPwd(true)}
+            className="bg-[#0C1D4F] text-white hover:bg-[#092041] flex items-center"
+          >
+            <KeyRound size={16} className="mr-2" />
+            Change Password
           </Button>
-        </div>
+</div>
       </section>
+      {/* dialogs that embed the forms we imported */}
+      {showEdit && (
+        <Dialog title="Edit Profile" onClose={() => setShowEdit(false)}>
+          <EditProfileForm onSuccess={() => setShowEdit(false)} />
+        </Dialog>
+      )}
+      {showPwd && (
+        <Dialog title="Change Password" onClose={() => setShowPwd(false)}>
+          <ChangePasswordForm onSuccess={() => setShowPwd(false)} />
+        </Dialog>
+      )}
+
     </div>
   );
 };
