@@ -12,6 +12,7 @@ import { startGoogleLogin } from "../utils/googleAuth";
 import CodingProfiles from "../pages/CodingProfiles";
 import UserProfile from "../pages/UserProfile";
 import { useUserContext } from "../context/userContext.jsx";
+import AttendanceCards from "../pages/AttendanceCards";
 
 /* -------------------------------------------------------------------------- */
 /*  SMALL REUSABLE BUTTON                                                     */
@@ -443,28 +444,7 @@ const AcademiXDashboard = () => {
           <p className="mt-6 italic">
             Never miss a beat—track your attendance with ease ✅
           </p>
-          <div className="flex gap-4 mt-6 flex-wrap">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-white p-4 rounded-xl shadow w-40 text-center"
-              >
-                <h3 className="text-sm font-semibold">Wireless Tech</h3>
-                <p className="text-sm mt-2">10/15</p>
-                <div className="w-16 h-16 border-4 border-black rounded-full mx-auto mt-4 flex items-center justify-center">
-                  <span className="text-lg font-bold">66%</span>
-                </div>
-                <div className="flex justify-center gap-2 mt-4">
-                  <Button className="bg-blue-400 text-black w-6 h-6 p-0">
-                    +
-                  </Button>
-                  <Button className="bg-blue-400 text-black w-6 h-6 p-0">
-                    -
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <AttendanceCards />
 
           {/* Calendar CTA */}
           <p className="mt-10 italic">
@@ -494,10 +474,6 @@ const AcademiXDashboard = () => {
     /* ---------- Coding Profiles ---------- */
     if (activePage === "Coding Profiles") {
       return <CodingProfiles />;
-    }
-
-    if(activePage==="Add Attendance"){
-       return 
     }
 
     /* ---------- Upload Docs form ---------- */
@@ -579,7 +555,7 @@ const AcademiXDashboard = () => {
       </Button>
 
       {/* Main Sidebar Buttons */}
-      {["Dashboard", "Add Attendance", "Coding Profiles", "Upload Docs"].map(
+      {["Dashboard", "Coding Profiles", "Upload Docs"].map(
         (btn) => (
           <Button
             key={btn}

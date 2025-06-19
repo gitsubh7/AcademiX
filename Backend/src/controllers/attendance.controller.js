@@ -75,7 +75,7 @@ export const markPresent =asyncHandler(async(req,res,next)=>{
 })
 
 export const getAttendance =asyncHandler(async(req,res,next)=>{
-  const {roll_number}=req.body
+  const {roll_number}=req.query
   console.log(roll_number);
   
   if(!roll_number) throw new apiError(400,"Please provide roll number");

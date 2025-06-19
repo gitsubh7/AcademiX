@@ -1,13 +1,13 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const UserContext = createContext();
-
 axios.defaults.withCredentials = true;
 
-// ----------  initial shapes ----------
+/* ─────────────────────────────
+   SHAPES & HELPERS
+─────────────────────────────*/
 const EMPTY_FORM = {
   name: "",
   email: "",
@@ -20,245 +20,260 @@ const EMPTY_FORM = {
   year: "",
   passout_year: "",
   phone_number: "",
-  subjects_enrolled: "",
-  image_url: "",
+  subjects_enrolled: "", // ← comma‑separated string in the form
+  image_url: "",          // ← File | string (URL)
 };
 
+/**
+ * Normalise any shape of subjects coming back from the backend into
+ *   subjects: [{ code, name }]
+ */
+const normaliseSubjects = (raw) => {
+  if (!raw) return [];
+
+  // 1️⃣ already an array of objects → tidy keys
+  if (Array.isArray(raw) && typeof raw[0] === "object") {
+    return raw.map((s) => ({
+      code: s.code || s.subject_code,
+      name: s.name || s.code || s.subject_code,
+    }));
+  }
+  // 2️⃣ array of strings → promote to objects
+  if (Array.isArray(raw)) {
+    return raw.map((str) => ({ code: str, name: str }));
+  }
+  return [];
+};
+
+/* ─────────────────────────────
+   CONTEXT SETUP
+─────────────────────────────*/
+const UserContext = createContext();
+
 export const UserContextProvider = ({ children }) => {
+  /* ------- config -------- */
   const serverUrl = "http://localhost:3000";
   const navigate  = useNavigate();
 
-  const [loading, setLoading]   = useState(false);
-  const [userState, setUserState] = useState(EMPTY_FORM);   // <- holds both form & logged‑in user
+  /* ------- state --------- */
+  const [loading, setLoading]     = useState(false);
+  const [formState, setFormState] = useState(EMPTY_FORM); // form fields only
+  const [currentUser, setCurrentUser] = useState(() => {
+    const cached = localStorage.getItem("academixUser");
+    if (!cached || cached === "undefined") return null;
+    try {
+      return JSON.parse(cached);
+    } catch {
+      localStorage.removeItem("academixUser");
+      return null;
+    }
+  });
 
-  /* --------------------------------------------------
-     Load cached user (if any) on first render
-  ----------------------------------------------------*/
+  /* ------- bootstrap auth header if cached token exists ------- */
   useEffect(() => {
-  const token  = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
+    if (token) axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  }, []);
 
-  // ---------- safe JSON.parse ----------
-  let cachedUser = null;
-  const raw = localStorage.getItem("academixUser");
-  if (raw && raw !== "undefined") {
-    try { cachedUser = JSON.parse(raw); }
-    catch { localStorage.removeItem("academixUser"); }
-  }
-  // -------------------------------------
-
-  if (token && cachedUser) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    setUserState(prev => ({
-      ...prev,
-      user: cachedUser,
-      isAuthenticated: true,
-    }));
-  }
-}, []);
-
-
-  /* ---------------- REGISTER ---------------- */
+  /* ─────────────────────────────
+     REGISTER USER
+  ──────────────────────────────*/
   const registerUser = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Validate NITP email
-    if (!userState.email.includes("@nitp.ac.in")) {
+    if (!formState.email.includes("@nitp.ac.in")) {
       toast.error("Please use your NITP email address");
-      setLoading(false);
-      return;
+      return setLoading(false);
     }
 
     try {
       const formData = new FormData();
 
-      // split subjects_enrolled into array
-      const subjectsArray = userState.subjects_enrolled
+      // split and tidy subjects
+      const subjectsArray = formState.subjects_enrolled
         .split(",")
-        .map(s => s.trim())
+        .map((s) => s.trim())
         .filter(Boolean);
 
-      // append simple fields
-      Object.keys(userState).forEach((key) => {
+      // append primitive fields
+      Object.entries(formState).forEach(([key, value]) => {
         if (key !== "image_url" && key !== "subjects_enrolled") {
-          formData.append(key, userState[key]);
+          formData.append(key, value);
         }
       });
 
-      // append each subject
-      subjectsArray.forEach(subject =>
-        formData.append("subjects_enrolled[]", subject)
-      );
+      // append subjects
+      subjectsArray.forEach((sub) => formData.append("subjects_enrolled[]", sub));
 
-      // image file check
-      if (userState.image_url instanceof File) {
-        formData.append("image_url", userState.image_url);
+      // image check
+      if (formState.image_url instanceof File) {
+        formData.append("image_url", formState.image_url);
       } else {
         toast.error("Please select a valid image file");
-        setLoading(false);
-        return;
+        return setLoading(false);
       }
 
-      await axios.post(
-        `${serverUrl}/api/v1/student/register`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      await axios.post(`${serverUrl}/api/v1/student/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       toast.success("User registered successfully");
-      setUserState(EMPTY_FORM);
+      setFormState(EMPTY_FORM);
       navigate("/login");
-    } catch (error) {
-      console.error("Registration error:", error);
-      const msg = error.response?.data?.message ||
-                  error.response?.data?.error   ||
-                  "Registration failed. Please try again.";
-      toast.error(msg);
+    } catch (err) {
+      console.error("Registration error:", err);
+      toast.error(
+        err.response?.data?.message || err.response?.data?.error || "Registration failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  /* ---------------- LOGIN ---------------- */
-  /* ---------------- LOGIN ---------------- */
-const loginUser = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  /* ─────────────────────────────
+     LOGIN USER
+  ──────────────────────────────*/
+  const loginUser = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const res = await axios.post(
-      `${serverUrl}/api/v1/student/login`,
-      { email: userState.email, password: userState.password },
-      { withCredentials: true }
-    );
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/v1/student/login`,
+        { email: formState.email, password: formState.password },
+        { withCredentials: true },
+      );
 
-    toast.success("User logged in successfully");
+      toast.success("User logged in successfully");
 
-    /* ---------- NEW: pull user from the right place ---------- */
-    // Your console log showed { data: { user, accessToken, refreshToken } }
-    const {
-   user:     loggedInUserRaw,
-   student:  loggedInStudentRaw,
-   accessToken,
-  refreshToken,
-} = res.data.data || {};
+      const {
+        user:    loggedInUserRaw,
+        student: loggedInStudentRaw,
+        accessToken,
+        refreshToken,
+      } = res.data.data || {};
 
- const loggedInUser = loggedInUserRaw || loggedInStudentRaw; // 👈 one of them
- if (!loggedInUser) {
-   throw new Error("Backend returned no user/student object");
-}
-    if (!loggedInUser) {
-      throw new Error("No user object returned from backend");
+      const rawUser = loggedInUserRaw || loggedInStudentRaw;
+      if (!rawUser) throw new Error("Backend returned no user/student object");
+
+      // make sure subjects is uniform & easy for UI
+      const subjects = normaliseSubjects(rawUser.subjects || rawUser.subjects_enrolled);
+      const user = { ...rawUser, subjects };
+
+      // cache + context
+      setCurrentUser(user);
+      localStorage.setItem("academixUser", JSON.stringify(user));
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("academixRefreshToken", refreshToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+
+      // clear password field after successful login
+      setFormState((prev) => ({ ...prev, password: "" }));
+      navigate("/home");
+    } catch (err) {
+      console.error("Login error:", err);
+      toast.error(
+        err.response?.data?.message || err.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // 1) keep in context
-    setUserState(prev => ({ ...prev,  user: loggedInUser, password: "" }));
-
-    // 2) cache so it survives reloads
-    localStorage.setItem("academixUser", JSON.stringify(loggedInUser));
-    // (optional) store tokens too if you need them later
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("academixRefreshToken", refreshToken);
-
-    navigate("/home");
-  } catch (error) {
-    console.error("Login error:", error);
-    toast.error(
-      error.response?.data?.message ||
-      error.message ||
-      "Something went wrong. Please try again"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  /* ---------------- LOGOUT (optional) ---------------- */
+  /* ─────────────────────────────
+     LOGOUT
+  ──────────────────────────────*/
   const logoutUser = () => {
     localStorage.removeItem("academixUser");
-    setUserState(EMPTY_FORM);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("academixRefreshToken");
+    setCurrentUser(null);
     navigate("/login");
   };
 
-  /* ---------------- FORGOT‑PASSWORD ---------------- */
+  /* ─────────────────────────────
+     PASSWORD‑FLOW HELPERS (unchanged)
+  ──────────────────────────────*/
   const forgotPasswordEmail = async (email) => {
     setLoading(true);
     try {
-      await axios.post(
-        `${serverUrl}/api/v1/student/requestPasswordReset`,
-        { email },
-        { withCredentials: true }
-      );
+      await axios.post(`${serverUrl}/api/v1/student/requestPasswordReset`, { email }, { withCredentials: true });
       toast.success("Forgot‑password email sent successfully");
-    } catch (error) {
-      console.error("Forgot‑password error:", error);
-      toast.error(error.response?.data?.message || "Something went wrong");
+    } catch (err) {
+      console.error("Forgot‑password error:", err);
+      toast.error(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ---------------- RESET‑PASSWORD ---------------- */
   const resetPassword = async (id, token, password) => {
     setLoading(true);
     try {
       if (!password) {
         toast.error("Password is required!");
-        setLoading(false);
-        return;
+        return setLoading(false);
       }
 
       await axios.post(
         `${serverUrl}/api/v1/student/passwordReset`,
-        { password },                           // body
-        { params: { id, token }, withCredentials: true } // query params
+        { password },
+        { params: { id, token }, withCredentials: true },
       );
 
       toast.success("Password reset successfully!");
       navigate("/login");
-    } catch (error) {
-      console.error("Reset‑password error:", error);
-      toast.error(error.response?.data?.message || "Something went wrong!");
+    } catch (err) {
+      console.error("Reset‑password error:", err);
+      toast.error(err.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ---------------- FORM FIELD HANDLER ---------------- */
+  /* ─────────────────────────────
+     FORM FIELD HANDLER
+  ──────────────────────────────*/
   const handlerUserInput = (name) => (e) => {
     const value = name === "image_url" ? e.target.files[0] : e.target.value;
-    setUserState(prev => ({ ...prev, [name]: value }));
+    setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
+  /* ─────────────────────────────
+     UTILITIES
+  ──────────────────────────────*/
   const resetUserState = () => {
-  // 1️⃣ wipe React state
-  setUserState(EMPTY_FORM);
-
-  // 2️⃣ wipe browser storage (only keys you really set)
-  localStorage.removeItem("gAccess");
-  localStorage.removeItem("gRefresh");
+    setFormState(EMPTY_FORM);
   };
 
-
-  /* ---------------- PROVIDER VALUE ---------------- */
+  /* ─────────────────────────────
+     PROVIDER VALUE
+  ──────────────────────────────*/
   return (
-    <UserContext.Provider value={{
-      registerUser,
-      loginUser,
-      forgotPasswordEmail,
-      resetPassword,
-      logoutUser,
-      userState,
-      setUserState,
-      handlerUserInput,
-      resetUserState,
-      loading,
-    }}>
+    <UserContext.Provider
+      value={{
+        registerUser,
+        loginUser,
+        logoutUser,
+        forgotPasswordEmail,
+        resetPassword,
+        // expose both pieces of state so legacy components work
+        userState: formState,     // 🏷 keep old name for form pages
+        setUserState: setFormState,
+        currentUser,              // 🆕 actual logged‑in user
+        setCurrentUser,           // (rarely needed)
+        handlerUserInput,
+        resetUserState,
+        loading,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
 };
 
-/* ------------- HOOK ------------- */
+/* ─────────────────────────────
+   HOOK
+─────────────────────────────*/
 export const useUserContext = () => useContext(UserContext);
