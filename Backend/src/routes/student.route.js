@@ -22,7 +22,7 @@ studentRouter.route("/login").post(loginStudent)
 studentRouter.route('/logout').post(verifyJWT,logoutStudent)
 
 
-//update student routes
+// student routes
 studentRouter.route("/getStudent") .get(verifyJWT, getCurrentStudent);
 studentRouter.route("/updateStudent").post(verifyJWT,updateStudent)
 studentRouter.route("/updateProfileImage").post(verifyJWT,upload.single("image_url"),updateProfileImage)

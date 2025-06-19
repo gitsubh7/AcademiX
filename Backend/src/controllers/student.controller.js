@@ -1,4 +1,5 @@
 import { Student } from "../models/student.model.js";
+import { Coding } from "../models/codings.model.js";
 import {asyncHandler} from "../utils/asyncHandler.js";
 import {apiResponse} from "../utils/apiResponse.js"
 import { apiError } from "../utils/apiError.js";
@@ -9,6 +10,7 @@ import {generateAccessAndRefreshToken} from "../utils/access-refresh.js"
 import nodemailer from "nodemailer"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
+
 
 
 export const registerStudent=asyncHandler(async(req,res,next)=>{
@@ -240,6 +242,16 @@ export const updateProfileImage = asyncHandler(async(req,res,next)=>{
     }
 
   },{new:true}).select("-password -refreshToken");
+  
+
+  //update in coding model as well for all the coding platforms
+  await Coding.updateMany({roll_number:student.roll_number},{
+    $set:{
+      image_url:cloudinary_img
+    }
+  })
+
+  
   
   if(!student) throw new apiError(500,"Error updating student");
   res.status(200).json(new apiResponse(200,"Profile image updated successfully",student));
