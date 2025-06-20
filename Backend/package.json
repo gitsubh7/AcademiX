@@ -4,8 +4,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "node -r dotenv/config --experimental-json-modules src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -r dotenv/config  --experimental-json-modules src/index.js"
+    "dev": "nodemon -r dotenv/config  --experimental-json-modules src/index.js",
+    "build": "echo \"Building the backend...\""
   },
   "author": "",
   "license": "ISC",
