@@ -258,7 +258,7 @@ const AcademiXDashboard = () => {
   /* ---------------------------------------------------------------------- */
   /*  (Upload / docs helpers – unchanged except URLs switched to env)       */
   /* ---------------------------------------------------------------------- */
-  const API = import.meta.env.VITE_API_BASE;
+  
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -451,21 +451,20 @@ const AcademiXDashboard = () => {
             Stay ahead, Add Class to Calendar—No Stress! 📝
           </p>
 
-          <Button
-            onClick={() => setShowAddClass(true)}
-            className="rounded-xl px-6 py-3 text-lg mt-4"
-            disabled={!hasGoogleToken}
-          >
-            Add Class To Calendar
-          </Button>
-
-          {!hasGoogleToken && (
-            <Button
-              onClick={handleGoogleConnect}
-              className="rounded-xl px-6 py-3 text-lg mt-4 bg-green-600 hover:bg-green-500"
-            >
-              Connect Google Calendar
-            </Button>
+          {!hasGoogleToken ? (
+        <Button
+          onClick={handleGoogleConnect}
+          className="rounded-xl px-6 py-3 text-lg mt-4"
+        >
+          Connect Google Calendar
+        </Button>
+      ) : (
+        <Button
+          onClick={() => setShowAddClass(true)}
+          className="rounded-xl px-6 py-3 text-lg mt-4"
+        >
+          Add Class To Calendar
+        </Button>
           )}
         </div>
       );
