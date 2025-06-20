@@ -1,8 +1,6 @@
 export const formatData = (data) => {
     const { matchedUser} = data;
     const { userContestRanking } = data;
-    console.log(matchedUser);
-    // console.log(matchedUser.profile);
     
     return {
       totalSolved: matchedUser.submitStats.acSubmissionNum[0]?.count || 0,

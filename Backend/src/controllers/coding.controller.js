@@ -10,11 +10,9 @@ import { Coding } from "../models/codings.model.js";
 
 export const getGithubProfile = asyncHandler(async (req, res, next) => {
   const { username } = req.params;
-  console.log(username)
   const url = `https://api.github.com/users/${username}`;
 
     const response = await axios.get(url);
-    console.log(response)
     if (!response.data) throw new apiError(404, "GitHub profile not found");
 
 
@@ -56,7 +54,7 @@ export const getCodeforcesProfile=asyncHandler(async(req,res,next)=>{
     maxRating: response.maxRating,
     rank: response.rank,
     maxRank: response.maxRank,
-    // problems: response.solvedProblemsCount,
+
   }
   const studentId = req.user._id;
   const student = await Student.findById(studentId);
@@ -105,35 +103,23 @@ export const getLeetCodeProfile = asyncHandler(async (req, res, next) => {
   );
 
   if (!result.data) throw new apiError(404, "LeetCode profile not found");
-  // const ss = result;
-  // console.log(ss);
   
   const profile = formatData(result.data.data);
-  // console.log(profile);
   
   const questions_solved= profile.totalSolved;
   const rating = profile.ranking;
-  // const {rollnum}=req.body.rollnum;
-
-
   const student = await Student.findById(req.user._id);
-  // console.log(student)
   if(!student) throw new apiError(404,"Student not found");
   
-
-
   const existingProfile = await Coding.findOne({ roll_number: student.roll_number, platform: "leetcode" });
-  // console.log(existingProfile);
+
   
   if (existingProfile) {
-    // Update the existing profile
     existingProfile.questions_solved = questions_solved;
     existingProfile.contest_rating = rating;
     await existingProfile.save();
   } else {
-    // Create a new profile
-    // console.log(student.name ,student.image_url, student.roll_number, questions_solved, rating);
-    
+    // Create a new profile    
     await Coding.create({
       name:student.name,
       image_url:student.image_url,

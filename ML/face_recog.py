@@ -6,7 +6,6 @@ import requests
 from PIL import Image
 from io import BytesIO
 import face_recognition
-import base64
 from flask_cors import CORS
 
 app = Flask(__name__)

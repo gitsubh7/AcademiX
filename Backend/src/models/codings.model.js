@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const codingSchema = new mongoose.Schema({
     image_url:{
         type:String,

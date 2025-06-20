@@ -11,10 +11,10 @@ import  cloudinary  from "cloudinary"
 
 export const  uploadDocument = asyncHandler(async(req,res,next)=>{
   const studentId = req.user._id
-  console.log(studentId);
+
   if(!req.file) throw new apiError(400,"Please upload a document");
   const uploadedDocument = req.file.path;
-  console.log(uploadedDocument);
+
   
   const cloudinary_img= await uploadToCloudinary(uploadedDocument);
   if(!cloudinary_img) throw new apiError(500,"Error uploading document");
@@ -56,9 +56,6 @@ export const getAllDocuments = asyncHandler(async(req,res,next)=>{
 export const deleteDocument = asyncHandler(async (req, res, next) => {
   const studentId = req.user._id;
   const documentId = req.params.id;
-
-  console.log("Student ID:", studentId);
-  console.log("Document ID:", documentId);
 
   if (!documentId) throw new apiError(400, "Please provide document id");
 

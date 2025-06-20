@@ -22,7 +22,7 @@ export const registerStudent=asyncHandler(async(req,res,next)=>{
   const {subjects_enrolled} = req.body;    
   const image_url = req.file.path
   if(!image_url) throw new apiError(400,"Please upload an image");
-  // console.log(req.body);
+
   if (!name ||!email ||!degree ||!department || !section ||!password ||!roll_number || !subjects_enrolled ||!year ||!passout_year ||!phone_number) {
       throw new apiError(400,"Please fill in all Mandatory fields"); 
     }
@@ -32,6 +32,7 @@ export const registerStudent=asyncHandler(async(req,res,next)=>{
   if(studentExists){
   throw new apiError(400,"Student already exists");
   }
+
   //handle  user imagee
   
   const cloudinary_img= await uploadToCloudinary(image_url);
@@ -64,14 +65,7 @@ export const registerStudent=asyncHandler(async(req,res,next)=>{
   const createdStudent = await Student.findById(newStudent._id).select("-password -refreshToken");
   if(!createdStudent) throw new apiError(500,"Error creating student ");
 
-
-
   res.status(201).json(new apiResponse(201,"Student created successfully",createdStudent));
-
-
-
-
-
   
 })
 
@@ -85,10 +79,7 @@ export const loginStudent = asyncHandler(async(req,res,next)=>{
   if(!isPasswordCorrect) throw new apiError(400,"Please enter correct password");
   const {at,rt}=await generateAccessAndRefreshToken(student._id);
   const loggedInStudent = await Student.findById(student._id).select("-password -refreshToken");
-  console.log(at);
-  console.log(rt);
-  
-  
+
   const options={
     httpOnly:true,
     secure:true,
@@ -115,7 +106,7 @@ export const logoutStudent = asyncHandler(async (req, res, next) => {
 
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // true only in prod
+      secure: process.env.NODE_ENV === "production", 
       sameSite: "None",
     };
 
@@ -124,10 +115,11 @@ export const logoutStudent = asyncHandler(async (req, res, next) => {
       .clearCookie("refreshToken", options)
       .json(new apiResponse(200, {}, "User logged out successfully"));
   } catch (error) {
-    console.error("Logout error:", error); // 👈 log for debugging
+    console.error("Logout error:", error);
     res.status(500).json(new apiResponse(500, {}, "Internal Server Error"));
   }
 });
+
 export const getCurrentStudent = asyncHandler(async (req, res, next) => {
   const studentId = req.user._id;
 
@@ -138,12 +130,10 @@ export const getCurrentStudent = asyncHandler(async (req, res, next) => {
 });
 
 
-
-// controllers/studentController.ts
 export const updateStudent = asyncHandler(async (req, res, next) => {
   const studentId = req.user._id;
 
-  // destructure only the fields you allow to change
+ // destructure only the fields you allow to change
   const {
     name,
     email,
@@ -157,11 +147,9 @@ export const updateStudent = asyncHandler(async (req, res, next) => {
     phone_number,
   } = req.body;
 
-  // ✏️ 1) make sure the student exists
   const exists = await Student.findById(studentId);
   if (!exists) throw new apiError(404, "Student not found");
-
-  // ✏️ 2) perform the update
+  
   const student = await Student.findByIdAndUpdate(
     studentId,
     {
@@ -210,10 +198,8 @@ export const requestPasswordReset=asyncHandler(async(req,res,next)=>{
 
   const host = req.get('host'); // Dynamically retrieves the host
   if(!host) throw new apiError(400,"Host not found");
-  console.log(host);
   const resetURL = `${process.env.FRONTEND_URL}/passwordReset?id=${student._id}&token=${token}`;
-;
-  console.log(resetURL);
+
   const transporter= nodemailer.createTransport({
     service:"gmail",
     auth:{
@@ -242,10 +228,11 @@ export const requestPasswordReset=asyncHandler(async(req,res,next)=>{
   
 
 })
+
+
 export const passwordReset = asyncHandler(async(req,res,next)=>{
   const {id,token}=req.query;
   const {password}=req.body
-  console.log(id);
   
   const student = await Student.findOne({
     _id:id
@@ -285,8 +272,6 @@ export const updateProfileImage = asyncHandler(async(req,res,next)=>{
     }
   })
 
-  
-  
   if(!student) throw new apiError(500,"Error updating student");
   res.status(200).json(new apiResponse(200,"Profile image updated successfully",student));
 

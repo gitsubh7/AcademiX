@@ -60,7 +60,6 @@ export const markAbsent =asyncHandler(async(req,res,next)=>{
   const attendance= await Attendance.findOne({subject_code:subject_code,roll_number:roll_number});
   if(!attendance) throw new apiError(404,"Attendance not found");
   attendance.absent+=1;
-  // attendance.total+=1;
   await attendance.save();
   res.status(200).json(new apiResponse(200,"Absent marked successfully",attendance));
 })
@@ -75,9 +74,7 @@ export const markPresent =asyncHandler(async(req,res,next)=>{
 })
 
 export const getAttendance =asyncHandler(async(req,res,next)=>{
-  const {roll_number}=req.query
-  console.log(roll_number);
-  
+  const {roll_number}=req.query 
   if(!roll_number) throw new apiError(400,"Please provide roll number");
   const attendance = await Attendance.find({roll_number:roll_number}).select("subject_code present absent total percentage");
   if(!attendance) throw new apiError(404,"Attendance not found");

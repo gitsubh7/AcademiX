@@ -10,7 +10,6 @@ cloudinary.config({
 export const uploadToCloudinary=async (file)=>{
     try {
         if(!file) return null;
-        console.log(file)
         const res = await cloudinary.uploader.upload(file,{
             folder:"NITP-Student-Portal",
         })
