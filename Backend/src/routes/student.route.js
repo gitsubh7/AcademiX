@@ -31,7 +31,7 @@ studentRouter.route("/updateProfileImage").post(verifyJWT,upload.single("image_u
 //course routes
 studentRouter.route("/addCourse").post(verifyJWT,addCourse)
 studentRouter.route("/editCourse").post(verifyJWT,editCourse)
-studentRouter.route("/removeCourse").post(verifyJWT,removeCourse)
+studentRouter.route("/removeCourse").delete(verifyJWT,removeCourse)
 
 //password routes
 studentRouter.route("/requestPasswordReset").post(requestPasswordReset)

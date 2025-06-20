@@ -14,3 +14,17 @@ export const getAttendance = (roll_number) =>
     params: { roll_number },          // ✅ goes to req.query.roll_number
     withCredentials: true,
   }) .then((res) => res.data.message); 
+  
+  export const removeCourse = async ({ subject_code }) => {
+  // axios lets you send a body with DELETE if you put it in the `data` field
+  const { data } = await axios.delete("http://localhost:3000/api/v1/student/removeCourse", {
+    data: { subject_code },
+  });
+  return data.data;          // ← matches your controller’s apiResponse
+};
+export const addCourse = async ({ subject_code, roll_number }) => {
+  const { data } = await axios.post("http://localhost:3000/api/v1/student/addCourse", { subject_code });
+  // the controller responds with   { status:200, message:"…", data: student }
+  // we don’t strictly need that object for the card, so just return subject_code
+  return { subject_code };
+};
