@@ -84,4 +84,4 @@ def face_recog():
         return jsonify({"message": f"Internal Server Error: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=4000)
+    app.run(host='0.0.0.0', port=os.environ.get("PORT2", 8000))
