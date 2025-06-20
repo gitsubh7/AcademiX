@@ -9,8 +9,7 @@ const port = process.env.PORT || 8000
 connectDB().
 then(()=>{
     app.listen(port,()=>{
-        console.log(`Server is running on port ${port}`)
-        console.log(`URL : http://localhost:${port}`)
+        console.log(`Server accessible at: https://academix-c07ol.onrender.com or http://localhost:${port} in local`);
     })
 }).catch((error)=>{
     console.log(error);
