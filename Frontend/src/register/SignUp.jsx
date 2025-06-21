@@ -187,7 +187,7 @@ const SignUp = () => {
         </form>
       </div>
 
-      <div className="hidden md:flex md:w-1/2 bg-[#CEE5F5] flex-col justify-center items-center text-[#00255A] p-10 relative">
+      <div className="hidden md:flex md:w-1/2 bg-[#B3D4F1] flex-col justify-center items-center text-[#00255A] p-10 relative">
         <h1 className="text-5xl lg:text-7xl font-bold absolute top-20 left-10">Welcome to AcademiX!</h1>
         <img src={v2} alt="Students" className="w-2/3 mt-6" />
         <img src={logo} alt="Logo" className="absolute top-8 right-8 w-20" />

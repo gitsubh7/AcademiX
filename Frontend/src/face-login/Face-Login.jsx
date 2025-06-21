@@ -73,7 +73,7 @@ const FaceLogin = () => {
       </div>
 
       {/* Right */}
-      <div className="w-1/2 bg-[#E6F1FB] p-10 flex flex-col justify-center">
+      <div className="w-1/2 bg-[#B3D4F1] p-10 flex flex-col justify-center">
         <div className="mb-6 text-right">
           <img src={Logo} alt="Logo" className="h-24 inline-block" />
         </div>

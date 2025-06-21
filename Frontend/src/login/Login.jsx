@@ -24,7 +24,7 @@ const navigate = useNavigate();
         </div>
       </div>
 
-      <div className="flex flex-col w-full md:w-1/2 justify-center items-center bg-[#CEE5F5] px-10 py-10 md:px-20 relative">
+      <div className="flex flex-col w-full md:w-1/2 justify-center items-center bg-[#B3D4F1] px-10 py-10 md:px-20 relative">
         <div className="absolute right-2 top-2 md:right-8 md:top-8">
           <img src={logo} alt="Logo" className="w-14 md:w-16 lg:w-20" />
         </div>
