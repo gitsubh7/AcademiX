@@ -133,7 +133,7 @@ useEffect(() => {
     <div className="p-6 min-h-screen">
       <h2 className="text-2xl font-bold mb-6">Coding Profiles</h2>
 
-      <div className="bg-white p-6 rounded-xl shadow-md mb-10">
+      <div className=" mb-10">
         <div className="flex justify-center gap-6">
           {[
             { img: Leet, name: "LeetCode" },
@@ -191,7 +191,7 @@ useEffect(() => {
       </div>
 
       {/* leaderboard + rest of the page unchanged */}
-      <div className="text-gray-800 italic mb-2 text-center">
+      <div className="text-gray-800 italic text-center text-xl mb-6">
         Leaderboard unlocked! Are you #1? 🔥
       </div>
 
