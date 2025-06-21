@@ -36,9 +36,9 @@ const FaceLogin = () => {
       // Prepare form data
       const formData = new FormData();
       formData.append('image', blob, 'capture.jpg');
-      formData.append('email', email);
+      formData.append('email', email.trim().toLowerCase());
 
-      const response = await fetch('http://192.168.139.142:4000/face_recog', {
+      const response = await fetch('http://192.168.181.142:8000/face_recog', {
         method: 'POST',
         body: formData,
       });

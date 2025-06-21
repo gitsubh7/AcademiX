@@ -131,7 +131,7 @@ useEffect(() => {
 
   return (
     <div className="p-6 min-h-screen">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Coding Profiles</h2>
+      <h2 className="text-2xl font-bold mb-6">Coding Profiles</h2>
 
       <div className="bg-white p-6 rounded-xl shadow-md mb-10">
         <div className="flex justify-center gap-6">

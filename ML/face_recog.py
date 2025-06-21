@@ -24,7 +24,8 @@ def face_recog():
             return jsonify({"message": "Image file is required"}), 400
 
         test_image_data = request.files['image'] 
-        email = request.form.get("email")  
+        email = request.form.get("email", "").strip().lower()
+
 
         if not email:
             return jsonify({"message": "Email is required"}), 400
