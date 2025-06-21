@@ -225,6 +225,7 @@ const AcademiXDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [deletingDocId, setDeletingDocId] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   /* google token status */
   const [hasGoogleToken, setHasGoogleToken] = useState(
@@ -270,6 +271,8 @@ const AcademiXDashboard = () => {
     try {
       setLoading(true);
       setError(null);
+      setSuccess(null);
+
       const res = await fetch("http://localhost:3000/api/v1/student/uploadDocument", {
         method: "POST",
         credentials: "include",
@@ -280,6 +283,10 @@ const AcademiXDashboard = () => {
       setDocName("");
       setFile(null);
       fetchDocuments();
+       setSuccess("Document uploaded successfully ✅");
+
+    // hide after 3 seconds
+    setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message || "Upload failed");
     } finally {
@@ -287,46 +294,60 @@ const AcademiXDashboard = () => {
     }
   };
 
-  const fetchDocuments = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await fetch("http://localhost:3000/api/v1/student/getAllDocuments", {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to fetch documents");
-      const data = await res.json();
-      const formatted =
-        (data?.message?.documents || []).map((d) => ({
-          id: d._id,
-          name: d.name,
-          url: d.url,
-        })) || [];
-      setDocuments(formatted);
-    } catch {
-      setError("Failed to load documents. Please try again.");
-      setDocuments([]);
-    } finally {
-      setLoading(false);
+ // inside the component that loads docs
+const fetchDocuments = async () => {
+  try {
+    setLoading(true);
+
+    const res = await fetch(
+      "http://localhost:3000/api/v1/student/getAllDocuments",
+      { credentials: "include" }
+    );
+
+    if (!res.ok) {
+      // 401, 500, 404 … – surface a *real* error instead of poisoning state
+      const { message = "Failed to fetch documents" } = await res.json();
+      throw new Error(message);
     }
-  };
+
+    const { message } = await res.json();           // message holds the object
+setDocuments(message?.documents ?? []);      // ⇠ *always* an array
+  } catch (err) {
+    console.error(err);
+    setError(err.message);
+    setDocuments([]);                      // keep UI alive
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDelete = async (docId) => {
-    try {
-      setDeletingDocId(docId);
-      const res = await fetch("http://localhost:3000/api/v1/student/deleteDocument/${docId}", {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to delete document");
-      fetchDocuments();
-    } catch (err) {
-      setError(err.message || "Failed to delete document");
-    } finally {
-      setDeletingDocId(null);
-    }
-  };
+  if (!docId) return setError("No document id found");
+  setDocuments((prev) => prev.filter((d) => d._id !== docId));
+  setDeletingDocId(docId);
+
+  try {
+
+    const res = await fetch(
+      `http://localhost:3000/api/v1/student/deleteDocument/${docId}`,
+      { method: "DELETE", credentials: "include" }
+    );
+
+    const payload = await res.json();      // always JSON now
+
+    if (!res.ok) throw new Error(payload.message || "Failed to delete document");
+  }
+   catch (err) {
+    setDocuments((prev) => [payload.document, ...prev]);
+    setError(err.message);
+  } finally {
+    setDeletingDocId(null);
+  }
+};
+
+
+
 
   /* ---------------------------------------------------------------------- */
   /*  Logout                                                                */
@@ -383,36 +404,39 @@ const AcademiXDashboard = () => {
           {documents.length ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="bg-white p-4 rounded-lg shadow flex flex-col justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{getFileIcon(doc.name)}</span>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1">{doc.name}</h3>
-                      <a
-                        href={doc.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline text-sm"
-                      >
-                        View / Download
-                      </a>
-                    </div>
-                  </div>
+  <div
+    key={doc._id}
+    className="bg-white shadow rounded-lg p-4 flex flex-col items-center"
+  >
+    <span className="text-lg font-medium mb-2">{doc.name}</span>
 
-                  <button
-                    onClick={() => handleDelete(doc.id)}
-                    className="text-red-500 text-sm hover:underline"
-                    disabled={loading || deletingDocId === doc.id}
-                  >
-                    {deletingDocId === doc.id ? "Deleting…" : "Delete"}
-                  </button>
-                </div>
-              ))}
+    {/* View / download */}
+    <a
+      href={doc.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline mb-3"
+    >
+      View&nbsp;/&nbsp;Download
+    </a>
+
+    {/* Delete */}
+    <button
+  onClick={() => handleDelete(doc._id)}
+  disabled={deletingDocId === doc._id}
+  className={`text-red-500 text-sm hover:underline ${
+    deletingDocId === doc._id ? "opacity-60 cursor-not-allowed" : ""
+  }`}
+>
+  {deletingDocId === doc._id ? "Deleting…" : "Delete"}
+</button>
+
+  </div>
+))}
+
+
             </div>
-          ) : (
+          ) :  !loading && (
             <p className="text-gray-500">No documents uploaded yet.</p>
           )}
         </div>
@@ -485,7 +509,23 @@ const AcademiXDashboard = () => {
               {error}
             </div>
           )}
-
+          {success && (
+  <div className="mb-4 p-2 bg-green-100 text-green-800 border border-green-300 rounded shadow flex items-center gap-2 animate-fade-in-down">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5 text-green-600"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M16.707 5.293a1 1 0 010 1.414L8.414 15 3.293 9.879a1 1 0 111.414-1.414L8.414 12.172l7.879-7.879a1 1 0 011.414 0z"
+        clipRule="evenodd"
+      />
+    </svg>
+    {success}
+  </div>
+)}
           <form
             onSubmit={handleUpload}
             className="border border-gray-400 rounded-xl p-6 flex flex-col items-center w-64 bg-55A2D3 shadow"
