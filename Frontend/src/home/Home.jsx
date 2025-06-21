@@ -403,36 +403,47 @@ setDocuments(message?.documents ?? []);      // ⇠ *always* an array
 
           {documents.length ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {documents.map((doc) => (
-  <div
-    key={doc._id}
-    className="bg-white shadow rounded-lg p-4 flex flex-col items-center"
-  >
-    <span className="text-lg font-medium mb-2">{doc.name}</span>
+              {documents.map((doc) => {
+  const fileName = doc.originalName || doc.name;        // ①
+  const icon = getFileIcon(fileName);                   // ②
 
-    {/* View / download */}
-    <a
-      href={doc.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-600 hover:underline mb-3"
+  return (
+    <div
+      key={doc._id}
+      className="bg-[#044466] rounded-lg p-4 flex flex-col items-center"
     >
-      View&nbsp;/&nbsp;Download
-    </a>
+      {/* icon */}
+      <span className="text-4xl mb-3">{icon}</span>     {/* ③ */}
 
-    {/* Delete */}
-    <button
-  onClick={() => handleDelete(doc._id)}
-  disabled={deletingDocId === doc._id}
-  className={`text-red-500 text-sm hover:underline ${
-    deletingDocId === doc._id ? "opacity-60 cursor-not-allowed" : ""
-  }`}
->
-  {deletingDocId === doc._id ? "Deleting…" : "Delete"}
-</button>
+      {/* name / label */}
+      <span className="text-lg font-medium mb-2 text-center break-all text-white">
+        {doc.name}
+      </span>
 
-  </div>
-))}
+      {/* view / download */}
+      <a
+        href={doc.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-white -600 hover:underline mb-3"
+      >
+        View&nbsp;/&nbsp;Download
+      </a>
+
+      {/* delete */}
+      <button
+        onClick={() => handleDelete(doc._id)}
+        disabled={deletingDocId === doc._id}
+        className={`text-red-500 text-sm hover:underline ${
+          deletingDocId === doc._id ? "opacity-60 cursor-not-allowed" : ""
+        }`}
+      >
+        {deletingDocId === doc._id ? "Deleting…" : "Delete"}
+      </button>
+    </div>
+  );
+})}
+
 
 
             </div>
