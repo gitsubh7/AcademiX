@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react"; 
 
 import { fetchLeetCode, fetchGitHub, fetchCodeforces ,getLeetRankByQuestions,
   getLeetRankByRating,
   getCFRankings } from "../api";
+  import { RefreshCw } from "lucide-react";  
 // … your logo imports
 import Leet from "../assets/Leet.png";
 import Gitlogo from"../assets/Gitlogo.jpeg";
@@ -16,6 +17,12 @@ const CodingProfiles = () => {
   const [leetRankByQ, setLeetRankByQ] = useState([]);
   const [leetRankByR, setLeetRankByR] = useState([]);
   const [codeforcesRank, setCodeforcesRank] = useState([]);
+  const [lbLoading, setLbLoading] = useState({   // ⬅️ NEW: per-leaderboard spinner
+    leetQ: false,
+    leetR: false,
+    cf: false,
+  }); 
+
   const LS_KEY = "codingProfiles.usernames";
 
 const saveUsernames = (obj) => {
@@ -64,6 +71,26 @@ const loadUsernames = () => {
       setLoading(prev => ({ ...prev, [platform]: false }));
     }
   }, [usernames]);
+
+  const refreshLeaderboard = async (which) => {
+    setLbLoading((p) => ({ ...p, [which]: true }));
+    try {
+      if (which === "leetQ") {
+        const res = await getLeetRankByQuestions();
+        setLeetRankByQ(res.data.message);
+      } else if (which === "leetR") {
+        const res = await getLeetRankByRating();
+        setLeetRankByR(res.data.message);
+      } else {
+        const res = await getCFRankings();
+        setCodeforcesRank(res.data.message);
+      }
+    } catch (err) {
+      console.error("Leaderboard fetch failed:", err);
+    } finally {
+      setLbLoading((p) => ({ ...p, [which]: false }));
+    }
+  };
 
   /** helper so each input only changes its own value ------------------- */
   const updateName = (platform, value) => {
@@ -171,23 +198,36 @@ useEffect(() => {
       <div className="grid grid-cols-3 gap-10">
         {/* LeetCode – Questions Solved */}
         <div>
-          <h3 className="font-bold text-lg text-gray-700 mb-2">LeetCode – Questions Solved</h3>
+          <h3 className="font-bold text-lg text-gray-700 mb-2 flex items-center">
+            LeetCode&nbsp;–&nbsp;Questions&nbsp;Solved
+            <button
+              onClick={() => refreshLeaderboard("leetQ")}
+              title="Refresh"
+              className="ml-1"
+            >
+              <RefreshCw
+                size={16}
+                className={lbLoading.leetQ ? "animate-spin" : ""}
+              />
+            </button>
+          </h3>
+
           <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-            {leetRankByQ.map((user, idx) => (
+            {leetRankByQ.map((u, i) => (
               <div
-                key={idx}
+                key={i}
                 className="flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm"
               >
-                <span className="text-gray-600 font-bold mr-3 w-8 text-center">
-                  {symbolForRank(idx)}
+                <span className="w-8 mr-3 text-center font-bold text-gray-600">
+                  {symbolForRank(i)}
                 </span>
                 <img
-                  src={user.image_url}
+                  src={u.image_url}
                   alt="avatar"
                   className="w-6 h-6 rounded-full mr-3"
                 />
                 <span className="text-gray-700">
-                  {user.name} – {user.questions_solved}
+                  {u.name} – {u.questions_solved}
                 </span>
               </div>
             ))}
@@ -196,50 +236,76 @@ useEffect(() => {
 
         {/* LeetCode – Contest Rating */}
         <div>
-          <h3 className="font-bold text-lg text-gray-700 mb-2">LeetCode – Contest Rating</h3>
+          <h3 className="font-bold text-lg text-gray-700 mb-2 flex items-center">
+            LeetCode&nbsp;–&nbsp;Contest&nbsp;Rating
+            <button
+              onClick={() => refreshLeaderboard("leetR")}
+              title="Refresh"
+              className="ml-1"
+            >
+              <RefreshCw
+                size={16}
+                className={lbLoading.leetR ? "animate-spin" : ""}
+              />
+            </button>
+          </h3>
+
           <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-            {leetRankByR.map((user, idx) => (
+            {leetRankByR.map((u, i) => (
               <div
-                key={idx}
+                key={i}
                 className="flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm"
               >
-                <span className="text-gray-600 font-bold mr-3 w-8 text-center">
-                  {symbolForRank(idx)}
+                <span className="w-8 mr-3 text-center font-bold text-gray-600">
+                  {symbolForRank(i)}
                 </span>
                 <img
-                  src={user.image_url}
+                  src={u.image_url}
                   alt="avatar"
                   className="w-6 h-6 rounded-full mr-3"
                 />
                 <span className="text-gray-700">
-                  {user.name} – {user.contest_rating}
+                  {u.name} – {u.contest_rating}
                 </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Codeforces – Rating */}
+        {/* Codeforces */}
         <div>
-          <h3 className="font-bold text-lg text-gray-700 mb-2">Codeforces</h3>
+          <h3 className="font-bold text-lg text-gray-700 mb-2 flex items-center">
+            Codeforces
+            <button
+              onClick={() => refreshLeaderboard("cf")}
+              title="Refresh"
+              className="ml-1"
+            >
+              <RefreshCw
+                size={16}
+                className={lbLoading.cf ? "animate-spin" : ""}
+              />
+            </button>
+          </h3>
+
           <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-            {codeforcesRank.map((user, idx) => (
+            {codeforcesRank.map((u, i) => (
               <div
-                key={idx}
+                key={i}
                 className="flex items-center bg-[#D9EFFF] rounded-full px-4 py-2 shadow-sm"
               >
-                <span className="text-gray-600 font-bold mr-3 w-8 text-center">
-                  {symbolForRank(idx)}
+                <span className="w-8 mr-3 text-center font-bold text-gray-600">
+                  {symbolForRank(i)}
                 </span>
-          <img
-            src={user.image_url}
-            alt="avatar"
-            className="w-6 h-6 rounded-full mr-3"
-          />
-          <span className="text-gray-700">
-            {user.name} – {user.contest_rating}
-          </span>
-        </div>
+                <img
+                  src={u.image_url}
+                  alt="avatar"
+                  className="w-6 h-6 rounded-full mr-3"
+                />
+                <span className="text-gray-700">
+                  {u.name} – {u.contest_rating}
+                </span>
+              </div>
       ))}
     </div>
   </div>
