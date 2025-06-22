@@ -38,7 +38,7 @@ const FaceLogin = () => {
       formData.append('image', blob, 'capture.jpg');
       formData.append('email', email.trim().toLowerCase());
 
-      const response = await fetch('http://192.168.181.142:8000/face_recog', {
+      const response = await fetch('http://192.168.15.142:8000/face_recog', {
         method: 'POST',
         body: formData,
       });
@@ -49,7 +49,7 @@ const FaceLogin = () => {
         setMessage(`✅ ${data.message || 'Login successful'}`);
         // You can also navigate to dashboard or home here
         setTimeout(() => {
-    navigate('/');
+    navigate('/home');
   }, 1500); 
       } else {
         setMessage(`❌ ${data.message || 'Login failed'}`);
