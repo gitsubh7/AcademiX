@@ -13,6 +13,7 @@ import CodingProfiles from "../pages/CodingProfiles";
 import UserProfile from "../pages/UserProfile";
 import { useUserContext } from "../context/userContext.jsx";
 import AttendanceCards from "../pages/AttendanceCards";
+import { getDocId } from '../utils/getDocId';
 
 /* -------------------------------------------------------------------------- */
 /*  SMALL REUSABLE BUTTON                                                     */
@@ -322,32 +323,40 @@ setDocuments(message?.documents ?? []);      // ⇠ *always* an array
 };
 
 
-  const handleDelete = async (docId) => {
+  // src/components/DocsList.jsx (or wherever)
+const handleDelete = async (docId) => {
   if (!docId) return setError("No document id found");
-  setDocuments((prev) => prev.filter((d) => d._id !== docId));
+
+  // Optimistically remove the document
+  const previousDocs = documents;
+  setDocuments((prev) => prev.filter((d) => getDocId(d) !== docId));
   setDeletingDocId(docId);
 
   try {
-
     const res = await fetch(
       `http://localhost:3000/api/v1/student/deleteDocument/${docId}`,
-      { method: "DELETE", credentials: "include" }
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
     );
 
-    const payload = await res.json();      // always JSON now
+    const payload = await res.json();
 
-    if (!res.ok) throw new Error(payload.message || "Failed to delete document");
-  }
-   catch (err) {
-    setDocuments((prev) => [payload.document, ...prev]);
+    if (!res.ok) {
+      throw new Error(payload.message || "Failed to delete document");
+    }
+
+    // Success — nothing to do; document is already removed from UI
+
+  } catch (err) {
+    // Roll back only if it failed
+    setDocuments(previousDocs);
     setError(err.message);
   } finally {
     setDeletingDocId(null);
   }
 };
-
-
-
 
   /* ---------------------------------------------------------------------- */
   /*  Logout                                                                */
@@ -405,7 +414,8 @@ setDocuments(message?.documents ?? []);      // ⇠ *always* an array
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {documents.map((doc) => {
   const fileName = doc.originalName || doc.name;        // ①
-  const icon = getFileIcon(fileName);                   // ②
+  const icon = getFileIcon(fileName);   
+  const id = getDocId(doc);                // ②
 
   return (
     <div
@@ -431,15 +441,19 @@ setDocuments(message?.documents ?? []);      // ⇠ *always* an array
       </a>
 
       {/* delete */}
-      <button
-        onClick={() => handleDelete(doc._id)}
-        disabled={deletingDocId === doc._id}
-        className={`text-red-500 text-sm hover:underline ${
-          deletingDocId === doc._id ? "opacity-60 cursor-not-allowed" : ""
-        }`}
-      >
-        {deletingDocId === doc._id ? "Deleting…" : "Delete"}
-      </button>
+     <button
+  type="button"
+  onClick={(e) => {
+    e.stopPropagation();
+    handleDelete(id);
+  }}
+  disabled={deletingDocId === id}
+  className={`relative z-10 text-red-500 text-sm hover:underline ${
+    deletingDocId === id ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
+  }`}
+>
+  {deletingDocId === id ? 'Deleting…' : 'Delete'}
+</button>
     </div>
   );
 })}
