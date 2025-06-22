@@ -18,15 +18,17 @@ export const removeCourse = asyncHandler(async(req,res,next)=>{
   await Attendance.deleteOne({roll_number:student.roll_number,subject_code:subject_code});
   res.status(200).json(new apiResponse(200,"Course removed successfully",student));
 
-  
-  
-
 })
 
 export const addCourse = asyncHandler(async(req,res,next)=>{
+  
   const studentId=  req.user._id;
   const student = await Student.findById(studentId);
   if(!student) throw new apiError(404,"Student not found");
+  // add only if course is not already added
+  if(student.subjects_enrolled.includes(req.body.subject_code)) {
+    throw new apiError(400,"Course already added");
+  }
   const {subject_code}=req.body;
   if(!subject_code) throw new apiError(400,"Please provide subject code");
   student.subjects_enrolled.push(subject_code);
@@ -38,7 +40,7 @@ export const addCourse = asyncHandler(async(req,res,next)=>{
    absent      : 0,
  });
 
- // 3️⃣ return the row we just created so UI can show correct counters
+ 
  const freshAttendance = await Attendance.findOne({
    roll_number : student.roll_number,
    subject_code,

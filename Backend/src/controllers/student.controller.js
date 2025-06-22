@@ -21,6 +21,8 @@ export const registerStudent=asyncHandler(async(req,res,next)=>{
   }
   const {subjects_enrolled} = req.body;    
   const image_url = req.file.path
+  console.log(image_url);
+  
   if(!image_url) throw new apiError(400,"Please upload an image");
 
   if (!name ||!email ||!degree ||!department || !section ||!password ||!roll_number || !subjects_enrolled ||!year ||!passout_year ||!phone_number) {
