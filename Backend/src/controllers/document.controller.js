@@ -17,12 +17,14 @@ export const  uploadDocument = asyncHandler(async(req,res,next)=>{
 
   
   const cloudinary_img= await uploadToCloudinary(uploadedDocument);
+  
   if(!cloudinary_img) throw new apiError(500,"Error uploading document");
   
   const document = await Document.create({
     name:req.body.name,
     url:cloudinary_img
   })
+  if(!document) throw new apiError(500,"Error creating document");
   
   const student = await Student.findByIdAndUpdate(studentId,{
     $push:{
