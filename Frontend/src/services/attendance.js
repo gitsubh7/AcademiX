@@ -28,3 +28,15 @@ export const addCourse = async ({ subject_code, roll_number }) => {
   // we don’t strictly need that object for the card, so just return subject_code
   return { subject_code };
 };
+export const editCourse = async ({ old_subject_code, new_subject_code }) => {
+  // The controller is PATCH /student/editCourse and expects the two codes
+  const { data } = await axios.post(
+    "http://localhost:3000/api/v1/student/editCourse",
+    { old_subject_code, new_subject_code },
+    { withCredentials: true }          // ⬅ if you’re using cookie auth
+  );
+
+  //   { status:200, message:"…", data: student }  ← controller shape
+  // We only need the message for a toast; nothing else is required here
+  return data.message;
+};

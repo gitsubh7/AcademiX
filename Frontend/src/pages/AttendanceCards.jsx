@@ -7,6 +7,7 @@ import {
   markAbsent,
   removeCourse,
   addCourse,
+  editCourse,
 } from "../services/attendance";
 
 export default function AttendanceCards() {
@@ -31,6 +32,8 @@ export default function AttendanceCards() {
   const [records, setRecords] = useState([]);
   const [showAdder, setShowAdder] = useState(false);
   const [courseCode, setCourseCode] = useState("");
+  const [editTarget, setEditTarget] = useState(null);  // old code or null
+   const [newCourseCode, setNewCourseCode] = useState("");
 
   /* ─────────────── Fetch attendance on mount ─────────────── */
   useEffect(() => {
@@ -117,6 +120,39 @@ export default function AttendanceCards() {
     }
   };
 
+  const handleEditCourse = async () => {
+  const trimmed = newCourseCode.trim().toUpperCase();
+  if (!trimmed || trimmed === editTarget) return;
+
+  // optimistic UI update
+  setRecords((prev) =>
+    prev.map((r) =>
+      r.subject_code === editTarget
+        ? { ...r, subject_code: trimmed, name: trimmed }
+        : r
+   )
+  );
+
+  try {
+   await editCourse({
+      old_subject_code: editTarget,
+      new_subject_code: trimmed,
+  });
+    setEditTarget(null);
+    setNewCourseCode("");
+  } catch (err) {
+    console.error("Edit failed, reverting:", err);
+    // rollback
+    setRecords((prev) =>
+      prev.map((r) =>
+        r.subject_code === trimmed
+          ? { ...r, subject_code: editTarget, name: editTarget }
+          : r
+      )
+    );
+  }
+};
+
   /* ─────────────── Add course ─────────────── */
   const handleAddCourse = async () => {
     const code = courseCode.trim().toUpperCase();
@@ -187,6 +223,16 @@ export default function AttendanceCards() {
             >
               Remove Course
             </Button>
+            <Button
+             className="bg-[#B3D4F1] text-black w-full mt-1 text-xs py-1 rounded"
+              onClick={() => {
+                setEditTarget(subject_code);
+               setNewCourseCode("");
+              }}
+              title="Edit this course code"
+            >
+              Edit Course
+                          </Button>
           </div>
         ))}
 
@@ -237,6 +283,45 @@ export default function AttendanceCards() {
           </div>
         </div>
       )}
+      {/* Edit-course modal */}
+{editTarget && (
+  <div className="fixed inset-0 bg-black/40 grid place-items-center z-50">
+    <div className="bg-white rounded-xl p-6 w-[320px]">
+      <h2 className="font-semibold text-lg text-[#0C1D4F] mb-4">
+        Edit course&nbsp;
+        <span className="font-mono text-sm text-gray-500">
+          ({editTarget})
+        </span>
+      </h2>
+
+      <input
+        value={newCourseCode}
+        onChange={(e) => setNewCourseCode(e.target.value)}
+        placeholder="New subject code (e.g. CSE205)"
+        className="w-full border rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#0C1D4F]/40"
+      />
+
+      <div className="flex justify-end gap-2">
+        <Button
+          className="bg-gray-300 text-black px-4 py-1 rounded"
+          onClick={() => {
+            setEditTarget(null);
+            setNewCourseCode("");
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          className="bg-[#0C1D4F] text-white px-4 py-1 rounded"
+          onClick={handleEditCourse}
+        >
+          Save
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
     </>
   );
 }
