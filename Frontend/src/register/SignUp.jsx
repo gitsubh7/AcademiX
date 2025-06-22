@@ -8,71 +8,56 @@ import axios from "axios";
 const SignUp = () => {
   const navigate = useNavigate();
   const { userState, handlerUserInput, resetUserState } = useUserContext();
-  const [inputReady, setInputReady] = useState(false);
 
-  useEffect(() => {
-    resetUserState();
-    setTimeout(() => setInputReady(true), 50);
-  }, []);
+  /** 🔹 NEW: keep the real File locally */
+  const [photoFile, setPhotoFile]   = useState(null);
+  const [photoPreview, setPreview]  = useState(null);
+
+  const [inputReady, setInputReady] = useState(false);
+  useEffect(() => { resetUserState(); setTimeout(() => setInputReady(true), 50); }, []);
 
   const {
-    name,
-    email,
-    degree,
-    department,
-    section,
-    password,
-    roll_number,
-    bio,
-    year,
-    passout_year,
-    phone_number,
-    subjects_enrolled,
-    image_url,
+    name, email, degree, department, section, password,
+    roll_number, bio, year, passout_year, phone_number,
+    subjects_enrolled                       // keep as comma list in context
   } = userState;
 
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
 
+  /* -----------------------------  SUBMIT  ----------------------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("degree", degree);
-    formData.append("department", department);
-    formData.append("section", section);
-    formData.append("password", password);
-    formData.append("roll_number", roll_number);
-    formData.append("bio", bio);
-    formData.append("year", year);
-    formData.append("passout_year", passout_year);
-    formData.append("phone_number", phone_number);
+    // 1️⃣ scalar fields
+    Object.entries({
+      name, email, degree, department, section, password,
+      roll_number, bio, year, passout_year, phone_number
+    }).forEach(([k, v]) => formData.append(k, v));
 
+    // 2️⃣ subjects_enrolled → array
     subjects_enrolled
       .split(",")
-      .map((subj) => subj.trim())
-      .forEach((subj) => formData.append("subjects_enrolled", subj));
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .forEach((s) => formData.append("subjects_enrolled", s));
 
-    if (image_url) {
-      formData.append("image_url", image_url);
-    }
+    // 3️⃣ image as real File
+    if (photoFile) formData.append("image_url", photoFile);
 
     try {
-      const res = await axios.post("http://localhost:3000/api/v1/student/register", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log("Registered successfully:", res.data);
+      await axios.post(
+        "http://localhost:3000/api/v1/student/register",
+        formData            // let axios add the multipart boundary
+      );
       navigate("/login");
     } catch (err) {
-      console.error("Registration failed:", err.response?.data || err.message);
+      console.error(err.response?.data || err.message);
       alert(err.response?.data?.message || "Registration failed");
     }
   };
+
 
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen">
@@ -149,31 +134,36 @@ const SignUp = () => {
           <input type="text" name="phone_number" value={phone_number} onChange={handlerUserInput("phone_number")} className="input" placeholder="Phone Number" />
           <input type="text" name="subjects_enrolled" value={subjects_enrolled} onChange={handlerUserInput("subjects_enrolled")} className="input" placeholder="e.g., CS101, MA102" />
 
-          <div>
+           <div>
             <label className="block text-sm md:text-base mb-1">Upload Passport-Size Photo</label>
             <div className="relative w-full">
               <input
-  type="file"
-  accept="image/*"
-  onChange={(e) => {
-    const file = e.target.files[0];
-    if (file) {
-      handlerUserInput("image_url")({ target: { value: file } });
-    }
-  }}
-  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-/>
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setPhotoFile(file);                     // real File
+                  setPreview(URL.createObjectURL(file));  // for <img>
+                  // Optional: keep just the filename in global state
+                  handlerUserInput("image_url")({ target: { value: file.name } });
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
 
               <div className="flex items-center justify-between p-2 rounded-md border border-white/50 bg-transparent text-white cursor-pointer">
-                {image_url ? image_url.name : "Choose Photo"}
+                {photoFile ? photoFile.name : "Choose Photo"}
               </div>
             </div>
-            {image_url instanceof Blob && (
-  <img src={URL.createObjectURL(image_url)} alt="Preview" className="w-20 h-20 object-cover mt-2 rounded-full" />
-)}
 
+            {photoPreview && (
+              <img
+                src={photoPreview}
+                alt="Preview"
+                className="w-20 h-20 object-cover mt-2 rounded-full"
+              />
+            )}
           </div>
-
           <button type="submit" className="w-full bg-gray-300 text-[#001B41] font-bold p-2 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50">
             Sign Up
           </button>
