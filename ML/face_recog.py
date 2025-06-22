@@ -3,7 +3,6 @@ import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import requests
-from PIL import Image
 from io import BytesIO
 import face_recognition
 from flask_cors import CORS
