@@ -147,16 +147,18 @@ if (!localStorage.getItem("accessToken")) {
     />
   </label>
   <label
-    htmlFor="avatarInput"
-    className="text-xs bg-[#55A2D3] px-2 py-0.5 rounded cursor-pointer text-white flex items-center gap-1"
-  >
-    <UploadCloud size={12} /> Edit Profile Image
-  </label>
+  htmlFor="avatarInput"
+  className="flex items-center gap-2 text-black bg-[#55A2D3] px-4 py-2 rounded-md font-medium border border-blue-900 shadow-md cursor-pointer w-fit"
+>
+  <UploadCloud size={16} className="text-black" />
+  Edit Profile Image
+</label>
+
       </aside>
 
       {/* 🔵 main profile panel  */}
       <section className="flex-1 bg-[#B3D4F1] p-10 overflow-auto">
-        <ul className="space-y-2 text-base">
+        <ul className="space-y-5 text-base">
           <li>
             <span className="font-semibold">Full Name:</span> {profile.name}
           </li>
@@ -199,20 +201,20 @@ if (!localStorage.getItem("accessToken")) {
         </ul>
 
         <div className="flex gap-8 mt-20">
-  <Button
+  <button
             onClick={() => setShowEdit(true)}
-            className="bg-[#0C1D4F] text-white hover:bg-[#092041] flex items-center"
+            className="bg-[#B3D4F1] text-black hover:bg-[#092041] hover:text-white flex items-center px-6 py-3 text-base border border-black rounded-md"
           >
             <PenSquare size={16} className="mr-2" />
             Edit Profile
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={() => setShowPwd(true)}
-            className="bg-[#0C1D4F] text-white hover:bg-[#092041] flex items-center"
+            className="bg-[#B3D4F1] text-black hover:bg-[#092041] hover:text-white flex items-center px-6 py-3 text-base border border-black rounded-md"
           >
             <KeyRound size={16} className="mr-2" />
             Change Password
-          </Button>
+          </button>
 </div>
       </section>
       {/* dialogs that embed the forms we imported */}
