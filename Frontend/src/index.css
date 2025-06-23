@@ -119,4 +119,6 @@
     @apply bg-background text-foreground;
   }
 }
+/* anywhere after Tailwind’s base/components/utilities directives */
+
 

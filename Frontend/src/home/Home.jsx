@@ -6,7 +6,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 
-import Logo from "../assets/Logo.png";
+import A from "../assets/A.png";
+import X from "../assets/X.png";
 import WeatherCard from "../WeatherSection/WeatherCard";
 import { startGoogleLogin } from "../utils/googleAuth";
 import CodingProfiles from "../pages/CodingProfiles";
@@ -18,22 +19,41 @@ import { getDocId } from '../utils/getDocId';
 /* -------------------------------------------------------------------------- */
 /*  SMALL REUSABLE BUTTON                                                     */
 /* -------------------------------------------------------------------------- */
+// Button.jsx
 const Button = ({
   children,
   className = "",
   onClick,
   type = "button",
   disabled = false,
-}) => (
-  <button
-    type={type}
-    onClick={onClick}
-    disabled={disabled}
-    className={`bg-[#0C1D4F] hover:bg-[#AAD0E9] text-white hover:text-black font-semibold py-1 px-3 rounded ${className}`}
-  >
-    {children}
-  </button>
-);
+  active = false,          // NEW:  is this the currently-selected button?
+}) => {
+  /* base colours */
+  const idleClasses   = "bg-[#0C1D4F] text-white hover:bg-[#AAD0E9] hover:text-black";
+  const activeClasses = "bg-[#AAD0E9] text-black";
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+     // Button.jsx  (only the className line shown)
+className={`
+  w-full text-left                    /* NEW ①  */
+  ${active ? activeClasses : idleClasses}
+  font-semibold py-2 px-4 rounded     /* px-4 so every label starts at the same x-offset */
+  transition-colors duration-200
+  disabled:opacity-50 disabled:cursor-not-allowed
+  ${className}
+`}
+
+    >
+      {children}
+    </button>
+  );
+};
+
+
 
 /* -------------------------------------------------------------------------- */
 /*  TOKEN HELPERS                                                             */
@@ -218,6 +238,9 @@ const AcademiXDashboard = () => {
   const [activePage, setActivePage] = useState("Dashboard");
   const [showAddClass, setShowAddClass] = useState(false);
   const [showDocuments, setShowDocuments] = useState(false);
+  // Anything that toggles 'showDocuments' should already be in your state.
+const currentBtn = showDocuments ? "Get Documents" : activePage;
+
 
   /* document & upload state (kept as‑is) */
   const [documents, setDocuments] = useState([]);
@@ -501,19 +524,19 @@ const handleDelete = async (docId) => {
           </p>
 
           {!hasGoogleToken ? (
-        <Button
+        <button
           onClick={handleGoogleConnect}
-          className="rounded-xl px-6 py-3 text-lg mt-4"
+          className="bg-[#00255A] rounded-xl px-6 py-3 text-lg mt-4 w-fit mx-auto text-white"
         >
           Connect Google Calendar
-        </Button>
+        </button>
       ) : (
-        <Button
+        <button
           onClick={() => setShowAddClass(true)}
-          className="rounded-xl px-6 py-3 text-lg mt-4"
+          className="bg-[#00255A] rounded-xl px-6 py-3 text-lg mt-4 w-fit mx-auto text-white"
         >
           Add Class To Calendar
-        </Button>
+        </button>
           )}
         </div>
       );
@@ -525,64 +548,76 @@ const handleDelete = async (docId) => {
     }
 
     /* ---------- Upload Docs form ---------- */
-    if (activePage === "Upload Docs") {
-      return (
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Upload Your Documents</h2>
-          {error && (
-            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-          {success && (
-  <div className="mb-4 p-2 bg-green-100 text-green-800 border border-green-300 rounded shadow flex items-center gap-2 animate-fade-in-down">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 text-green-600"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path
-        fillRule="evenodd"
-        d="M16.707 5.293a1 1 0 010 1.414L8.414 15 3.293 9.879a1 1 0 111.414-1.414L8.414 12.172l7.879-7.879a1 1 0 011.414 0z"
-        clipRule="evenodd"
-      />
-    </svg>
-    {success}
-  </div>
-)}
-          <form
-            onSubmit={handleUpload}
-            className="border border-gray-400 rounded-xl p-6 flex flex-col items-center w-64 bg-55A2D3 shadow"
+   if (activePage === "Upload Docs") {
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-[#B3D4F1]">
+      <div className="w-full max-w-lg p-6 bg-[#F0F9FF] rounded-xl shadow-lg border border-gray-300">
+        <h2 className="text-3xl font-bold mb-6 text-center text-[#00255A]">
+          Upload Your Documents
+        </h2>
+
+        {error && (
+          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded text-center">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-4 p-2 bg-green-100 text-green-800 border border-green-300 rounded shadow flex items-center gap-2 animate-fade-in-down">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-green-600"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414L8.414 15 3.293 9.879a1 1 0 111.414-1.414L8.414 12.172l7.879-7.879a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {success}
+          </div>
+        )}
+
+        <form
+          onSubmit={handleUpload}
+          className="flex flex-col gap-5"
+        >
+          <label className="text-sm font-medium text-gray-700">
+            Document Name
+            <input
+              type="text"
+              value={docName}
+              onChange={(e) => setDocName(e.target.value)}
+              className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              required
+            />
+          </label>
+
+          <label className="text-sm font-medium text-gray-700">
+            Select File
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              required
+            />
+          </label>
+
+          <Button
+            type="submit"
+            className="w-full py-2 bg-[#00255A] text-white font-semibold rounded hover:bg-[#013580] transition-colors duration-300"
+            disabled={loading}
           >
-            <label className="w-full mb-4 text-sm font-medium text-gray-700">
-              Document Name
-              <input
-                type="text"
-                value={docName}
-                onChange={(e) => setDocName(e.target.value)}
-                className="w-full p-2 border rounded mt-1"
-                required
-              />
-            </label>
+            {loading ? "Uploading…" : "Upload Document"}
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
-            <label className="w-full mb-4 text-sm font-medium text-gray-700">
-              Select File
-              <input
-                type="file"
-                onChange={(e) => setFile(e.target.files[0])}
-                className="w-full p-2 border rounded mt-1"
-                required
-              />
-            </label>
-
-            <Button type="submit" className="w-full py-2" disabled={loading}>
-              {loading ? "Uploading…" : "Upload Document"}
-            </Button>
-          </form>
-        </div>
-      );
-    }
 
     return null;
   };
@@ -604,14 +639,33 @@ const handleDelete = async (docId) => {
       <aside className="bg-[#0C1D4F] text-white w-64 p-4 flex flex-col justify-between">
   <div>
     {/* Logo and Title */}
-    <div className="flex items-start gap-2 mb-8">
-      <img src={Logo} alt="Logo" className="w-20 h-20 mt-1" />
-      <h1 className="text-3xl font-bold text-[#55A2D3] leading-tight mt-2">AcademiX</h1>
-    </div>
+    <div className="flex items-center gap-4 mb-8">
+  {/* A + X overlapping compact logo */}
+  <div className="relative w-9 h-9">
+    <img
+      src={A}
+      alt="A"
+      className="absolute top-0 left-0 w-8 h-8"
+    />
+    <img
+      src={X}
+      alt="X"
+      className="absolute bottom-0 right-0 w-7 h-7"
+    />
+  </div>
+
+  {/* AcademiX text */}
+  <h1 className="text-2xl font-extrabold text-[#7AC2E3] leading-tight">
+    Academi<span className="text-[#55A2D3]">X</span>
+  </h1>
+</div>
+
+
 
     <nav className="flex flex-col gap-4">
       {/* User Profile Button */}
       <Button
+       active={currentBtn === "User Profile"}
         className="justify-start"
         onClick={() => setActivePage("User Profile")}
       >
@@ -623,6 +677,7 @@ const handleDelete = async (docId) => {
         (btn) => (
           <Button
             key={btn}
+            active={currentBtn === btn}
             className="justify-start"
             onClick={() => {
               setActivePage(btn);
@@ -636,6 +691,7 @@ const handleDelete = async (docId) => {
 
       {/* Get Documents Button */}
       <Button
+      active={currentBtn === "Get Documents"}
         className="justify-start"
         onClick={() => {
           setActivePage("Dashboard");
