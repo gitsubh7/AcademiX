@@ -12,7 +12,6 @@ export default function App() {
     <Routes>
       {/* Default route goes to Signup */}
       <Route path="/" element={<SignUp />} />
-
       <Route path="/login" element={<Login />} />
       <Route path="/home" element={<Home/>}/>
       <Route path="/register" element={<SignUp />} />

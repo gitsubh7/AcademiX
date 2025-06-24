@@ -129,108 +129,122 @@ if (!localStorage.getItem("accessToken")) {
      3️⃣  UI
   ------------------------------------------------------------ */
   return (
-    <div className="flex h-full">
-      {/* 🔵 left rail (matches your dark sidebar colour) */}
-      <aside className="w-60 bg-[#B3D4F1] text-white flex flex-col items-center p-6 gap-4">
-        <label htmlFor="avatarInput" className="cursor-pointer">
-    <img
-      src={profile.image_url || placeholder}
-      alt="avatar"
-      className="w-32 h-32 rounded-full object-cover ring-2 ring-[#55A2D3]"
-    />
-    <input
-      type="file"
-      id="avatarInput"
-      accept="image/*"
-      className="hidden"
-      onChange={handleProfileImageUpload}
-    />
-  </label>
-  <label
-  htmlFor="avatarInput"
-  className="flex items-center gap-2 text-black bg-[#55A2D3] px-4 py-2 rounded-md font-medium border border-blue-900 shadow-md cursor-pointer w-fit"
->
-  <UploadCloud size={16} className="text-black" />
-  Edit Profile Image
-</label>
+  <div className="min-h-screen bg-[#B3D4F1] flex items-center justify-center p-6">
+    <div className="bg-white/50  rounded-2xl shadow-2xl p-10 w-full max-w-3xl space-y-8">
+      {/* Profile Picture */}
+      <div className="flex flex-col items-center">
+        <label htmlFor="avatarInput" className="relative cursor-pointer group">
+          <img
+            src={profile.image_url || placeholder}
+            alt="avatar"
+            className="w-32 h-32 rounded-full object-cover ring-4 ring-[#55A2D3] shadow-md group-hover:scale-105 transition-transform"
+          />
+          <input
+            type="file"
+            id="avatarInput"
+            accept="image/*"
+            className="hidden"
+            onChange={handleProfileImageUpload}
+          />
+        </label>
 
-      </aside>
+        <label
+          htmlFor="avatarInput"
+          className="mt-4 flex items-center gap-2 text-black bg-[#55A2D3] px-4 py-2 rounded-full font-semibold border border-blue-900 shadow-md cursor-pointer hover:bg-[#3d8fbb] transition-all"
+        >
+          <UploadCloud size={16} className="text-black" />
+          Edit Profile Image
+        </label>
+      </div>
 
-      {/* 🔵 main profile panel  */}
-      <section className="flex-1 bg-[#B3D4F1] p-10 overflow-auto">
-        <ul className="space-y-5 text-base">
-          <li>
-            <span className="font-semibold">Full Name:</span> {profile.name}
-          </li>
-          <li>
-            <span className="font-semibold">Email:</span> {profile.email}
-          </li>
-          <li>
-            <span className="font-semibold">Degree:</span> {profile.degree}
-          </li>
-          <li>
-            <span className="font-semibold">Department:</span>{" "}
-            {profile.department}
-          </li>
-          <li>
-            <span className="font-semibold">Section:</span> {profile.section}
-          </li>
-          <li>
-            <span className="font-semibold">Roll Number:</span>{" "}
-            {profile.roll_number}
-          </li>
-          <li>
-            <span className="font-semibold">Year:</span> {profile.year}
-          </li>
-          <li>
-            <span className="font-semibold">Graduation Year:</span>{" "}
-            {profile.passout_year}
-          </li>
-          <li>
-            <span className="font-semibold">Phone Number:</span>{" "}
-            {profile.phone_number ?? "-"}
-          </li>
-          <li>
-            <span className="font-semibold">Bio:</span>{" "}
-            {profile.bio || "— not added —"}
-          </li>
-          <li>
-            <span className="font-semibold">Subjects Enrolled:</span>{" "}
-            {profile.subjects_enrolled?.join(", ") || "-"}
-          </li>
-        </ul>
+      {/* Profile Info */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 text-[#092041]">
+  {/* LEFT COLUMN */}
+  <div>
+    <p className="text-sm text-gray-600">Full Name</p>
+    <p className="text-lg font-semibold">{profile.name}</p>
+  </div>
+  <div>
+    <p className="text-sm text-gray-600">Email</p>
+    <p className="text-lg font-semibold">{profile.email}</p>
+  </div>
 
-        <div className="flex gap-8 mt-20">
-  <button
-            onClick={() => setShowEdit(true)}
-            className="bg-[#B3D4F1] text-black hover:bg-[#092041] hover:text-white flex items-center px-6 py-3 text-base border border-black rounded-md"
-          >
-            <PenSquare size={16} className="mr-2" />
-            Edit Profile
-          </button>
-          <button
-            onClick={() => setShowPwd(true)}
-            className="bg-[#B3D4F1] text-black hover:bg-[#092041] hover:text-white flex items-center px-6 py-3 text-base border border-black rounded-md"
-          >
-            <KeyRound size={16} className="mr-2" />
-            Change Password
-          </button>
+  <div>
+    <p className="text-sm text-gray-600">Phone Number</p>
+    <p className="text-lg font-semibold">{profile.phone_number ?? "-"}</p>
+  </div>
+  <div>
+    <p className="text-sm text-gray-600">Degree</p>
+    <p className="text-lg font-semibold">{profile.degree}</p>
+  </div>
+
+  <div>
+    <p className="text-sm text-gray-600">Department</p>
+    <p className="text-lg font-semibold">{profile.department}</p>
+  </div>
+  <div>
+    <p className="text-sm text-gray-600">Section</p>
+    <p className="text-lg font-semibold">{profile.section}</p>
+  </div>
+
+  <div>
+    <p className="text-sm text-gray-600">Roll Number</p>
+    <p className="text-lg font-semibold">{profile.roll_number}</p>
+  </div>
+  <div>
+    <p className="text-sm text-gray-600">Year</p>
+    <p className="text-lg font-semibold">{profile.year}</p>
+  </div>
+
+  <div>
+    <p className="text-sm text-gray-600">Graduation Year</p>
+    <p className="text-lg font-semibold">{profile.passout_year}</p>
+  </div>
+
+  {/* Full-width rows */}
+  <div className="sm:col-span-2">
+    <p className="text-sm text-gray-600">Bio</p>
+    <p className="text-lg font-medium italic">{profile.bio || "— not added —"}</p>
+  </div>
+  <div className="sm:col-span-2">
+    <p className="text-sm text-gray-600">Subjects Enrolled</p>
+    <p className="text-lg font-medium">{profile.subjects_enrolled?.join(", ") || "-"}</p>
+  </div>
 </div>
-      </section>
-      {/* dialogs that embed the forms we imported */}
-      {showEdit && (
-        <Dialog title="Edit Profile" onClose={() => setShowEdit(false)}>
-          <EditProfileForm onSuccess={() => setShowEdit(false)} />
-        </Dialog>
-      )}
-      {showPwd && (
-        <Dialog title="Change Password" onClose={() => setShowPwd(false)}>
-          <ChangePasswordForm onSuccess={() => setShowPwd(false)} />
-        </Dialog>
-      )}
 
+      {/* Action Buttons */}
+      <div className="flex flex-wrap justify-center gap-4 pt-4 border-t">
+        <button
+          onClick={() => setShowEdit(true)}
+          className="bg-[#55A2D3] text-white hover:bg-[#092041] flex items-center px-6 py-3 text-base font-medium rounded-full shadow transition-all"
+        >
+          <PenSquare size={18} className="mr-2" />
+          Edit Profile
+        </button>
+        <button
+          onClick={() => setShowPwd(true)}
+          className="bg-[#55A2D3] text-white hover:bg-[#092041] flex items-center px-6 py-3 text-base font-medium rounded-full shadow transition-all"
+        >
+          <KeyRound size={18} className="mr-2" />
+          Change Password
+        </button>
+      </div>
     </div>
-  );
+
+    {/* Dialog Modals */}
+    {showEdit && (
+      <Dialog title="Edit Profile" onClose={() => setShowEdit(false)}>
+        <EditProfileForm onSuccess={() => setShowEdit(false)} />
+      </Dialog>
+    )}
+    {showPwd && (
+      <Dialog title="Change Password" onClose={() => setShowPwd(false)}>
+        <ChangePasswordForm onSuccess={() => setShowPwd(false)} />
+      </Dialog>
+    )}
+  </div>
+);
+
 };
 
 export default UserProfile;
