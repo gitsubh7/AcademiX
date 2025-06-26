@@ -5,6 +5,27 @@
 <p id="description">AcademiX is a dynamic full‑stack student dashboard built with Node.js Express Flask React and MongoDB enhanced by Python and dlib-powered facial recognition Cloudinary media storage Nodemailer for secure password recovery and styled with Tailwind CSS. It seamlessly integrates RESTful and GraphQL APIs features live weather updates and syncs class reminders with Google Calendar. Students can track attendance across over five subjects monitor coding performance from three platforms and securely store academic documents—all within one intelligent and responsive portal. This well-structured dashboard exemplifies modern best practices in e-learning platforms and dashboard design.</p>
 
 
+  
+<h2>💻 Built with</h2>
+
+Technologies used in the project:
+
+*   Node.js
+*   Express.js
+*   React.js
+*   MongoDB
+*   Flask
+*   Cloudinary
+*   Google Calendar API
+*   Python
+*   dlib
+*   Tailwind CSS
+*   Nodemailer
+*   RESTful APIs
+*   GraphQL APIs
+
+
+
 <h2>🛠️ Installation Steps:</h2>
 
 <p>1. Clone Repository</p>
@@ -73,27 +94,9 @@ cd../ML pip install -r requirements.txt python app.py
 http://localhost:3001
 ```
 
-<h2>🍰 Contribution Guidelines:</h2>
+<h2>🍰 Contributors :</h2>
 
   
-  
-<h2>💻 Built with</h2>
-
-Technologies used in the project:
-
-*   Node.js
-*   Express.js
-*   React.js
-*   MongoDB
-*   Flask
-*   Cloudinary
-*   Google Calendar API
-*   Python
-*   dlib
-*   Tailwind CSS
-*   Nodemailer
-*   RESTful APIs
-*   GraphQL APIs
 
 
 ## 🔐 Environment Variables
@@ -283,4 +286,12 @@ The backend server uses the following environment variables, which should be con
 
 ### 📝 Documents
 ![Attendance](./assets/screenshots/attendance.png)
+
+
+
+
+## 🍰 Contributors
+
+- [**Abdul Subhan**](https://github.com/gitsubh7)
+- [**Anjali Rani**](https://github.com/Anjali28082003)
 
