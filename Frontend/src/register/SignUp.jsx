@@ -280,13 +280,20 @@ const SignUp = () => {
       </div>
 
       {/* -------------------- RIGHT / ILLUSTRATION SIDE -------------------- */}
-      <div className="hidden md:flex md:w-1/2 bg-[#B3D4F1] flex-col justify-center items-center text-[#00255A] p-10 relative">
-        <h1 className="text-5xl lg:text-7xl font-bold absolute top-20 left-10">
-          Welcome to AcademiX!
-        </h1>
-        <img src={v2} alt="students" className="w-2/3 mt-6" />
-        <img src={logo} alt="logo" className="absolute top-8 right-8 w-20" />
-      </div>
+     <div className="hidden md:flex md:w-1/2 bg-[#B3D4F1] flex-col justify-center items-center text-[#00255A] p-10 relative">
+  {/* Logo in top-right */}
+  <img src={logo} alt="logo" className="absolute top-8 right-8 w-20" />
+
+  {/* Horizontally centered, vertically same as before */}
+  <h1 className="text-5xl lg:text-7xl font-bold absolute top-20 left-1/2 transform -translate-x-1/2 text-center">
+    Welcome to AcademiX!
+  </h1>
+
+  {/* Uplifted image */}
+  <img src={v2} alt="students" className="w-2/3 mt-2" />
+</div>
+
+
     </div>
   );
 };

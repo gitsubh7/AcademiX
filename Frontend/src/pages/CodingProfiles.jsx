@@ -131,63 +131,63 @@ useEffect(() => {
 
   return (
     <div className="p-6 min-h-screen">
-      <h2 className="text-2xl font-bold mb-6">Coding Profiles</h2>
+      <h2 className="text-3xl font-bold mb-8 text-[#0C1D4F]">Coding Profiles</h2>
 
-      <div className=" mb-10">
-        <div className="flex justify-center gap-6">
-          {[
-            { img: Leet, name: "LeetCode" },
-            { img: Gitlogo, name: "GitHub" },
-            { img: Code, name: "Codeforces" },
-          ].map(p => (
-            <div
-              key={p.name}
-              className="bg-[#202060] text-white rounded-xl p-4 w-52 text-center shadow-lg"
-            >
-              {/* logo */}
-              <img
-                src={p.img}
-                alt={p.name}
-                className="w-20 h-20 mx-auto mb-4 object-contain"
-              />
+  <div className="mb-10">
+    <div className="flex justify-center gap-8 flex-wrap">
+      {[
+        { img: Leet, name: "LeetCode" },
+        { img: Gitlogo, name: "GitHub" },
+        { img: Code, name: "Codeforces" },
+      ].map((p) => (
+        <div
+          key={p.name}
+          className="bg-[#202060] text-white rounded-2xl p-6 w-80 shadow-xl hover:shadow-2xl transition-transform transform hover:scale-105"
+        >
+          {/* logo and platform name */}
+          <div className="flex items-center gap-4 mb-6">
+            <img src={p.img} alt={p.name} className="w-14 h-14 object-contain" />
+            <h3 className="text-xl font-semibold">{p.name}</h3>
+          </div>
 
-              {/* username input */}
-              <input
-                type="text"
-                placeholder="Enter your username"
-                value={usernames[p.name]}
-                onChange={e => updateName(p.name, e.target.value)}
-                onBlur={() => handleFetch(p.name)}          // auto‑fetch on blur
-                onKeyDown={e => e.key === "Enter" && e.target.blur()}
-                className="mt-1 mb-4 w-full rounded-lg px-3 py-2 text-sm text-white
-                           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
+          {/* username input */}
+          <input
+            type="text"
+            placeholder="Enter your username"
+            value={usernames[p.name]}
+            onChange={(e) => updateName(p.name, e.target.value)}
+            onBlur={() => handleFetch(p.name)}
+            onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
+            className="w-full rounded-lg px-4 py-2 text-sm text-white bg-[#1a1a40] mb-5
+                     placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
 
-              {/* stats or spinner */}
-              {loading[p.name] ? (
-                <p className="text-sm italic">Loading…</p>
-              ) : p.name === "LeetCode" ? (
-                <div className="text-sm space-y-1">
-                  <p>Questions Solved: {leetData?.totalSolved ?? "—"}</p>
-                 <p>Ranking: {leetData ? Math.floor(leetData.ranking) : "—"}</p>
-
-                </div>
-              ) : p.name === "GitHub" ? (
-                <div className="text-sm space-y-1">
-                  <p>Public Repos: {githubData?.public_repos ?? "—"}</p>
-                  <p>Total Commits: {githubData?.commits ?? "—"}</p>
-                  <p>Followers: {githubData?.followers ?? "—"}</p>
-                </div>
-              ) : (
-                <div className="text-sm space-y-1">
-                  <p>Rating: {codeforcesData?.rating ?? "—"}</p>
-                  <p>Max Rating: {codeforcesData?.maxRating ?? "—"}</p>
-                  <p>Rank: {codeforcesData?.rank ?? "—"}</p>
-                </div>
-              )}
-            </div>
-          ))}
+          {/* stats or loading */}
+          <div className="text-left text-sm space-y-3">
+            {loading[p.name] ? (
+              <p className="italic">Loading…</p>
+            ) : p.name === "LeetCode" ? (
+              <>
+                <p><span className="font-semibold">✅ Solved:</span> {leetData?.totalSolved ?? "—"}</p>
+                <p><span className="font-semibold">🏆 Ranking:</span> {leetData ? Math.floor(leetData.ranking) : "—"}</p>
+              </>
+            ) : p.name === "GitHub" ? (
+              <>
+                <p><span className="font-semibold">📦 Repos:</span> {githubData?.public_repos ?? "—"}</p>
+                <p><span className="font-semibold">📝 Commits:</span> {githubData?.commits ?? "—"}</p>
+                <p><span className="font-semibold">👥 Followers:</span> {githubData?.followers ?? "—"}</p>
+              </>
+            ) : (
+              <>
+                <p><span className="font-semibold">📊 Rating:</span> {codeforcesData?.rating ?? "—"}</p>
+                <p><span className="font-semibold">🚀 Max Rating:</span> {codeforcesData?.maxRating ?? "—"}</p>
+                <p><span className="font-semibold">🎖️ Rank:</span> {codeforcesData?.rank ?? "—"}</p>
+              </>
+            )}
+          </div>
         </div>
+      ))}
+</div>
       </div>
 
       {/* leaderboard + rest of the page unchanged */}

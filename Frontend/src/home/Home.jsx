@@ -258,7 +258,8 @@ const currentBtn = showDocuments ? "Get Documents" : activePage;
 
   /* context */
   const { userState, resetUserState } = useUserContext();
-  const firstName = userState?.name?.split(" ")[0] || "there";
+  const userData = JSON.parse(localStorage.getItem("academixUser"));
+const firstName = userData?.name?.split(" ")[0] || "there";
 
   /* --------- keep token state synced across tabs ---------- */
   useEffect(() => {
@@ -494,53 +495,54 @@ const handleDelete = async (docId) => {
      if (activePage === "User Profile") return <UserProfile />;
 
     /* ---------- Main dashboard ---------- */
-    if (activePage === "Dashboard") {
-      return (
-        <div>
-          {/* Top welcome + weather */}
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-4xl font-bold text-[#0C1D4F]">
-                Welcome to AcademiX!
-              </h1>
-              <p className="mt-4 text-lg">
-                Hey, <span className="font-semibold">{firstName}</span>
-                <br />
-                Welcome Back!
-              </p>
-            </div>
-            <WeatherCard city="bihta" />
-          </div>
+   if (activePage === "Dashboard") {
+  return (
+    <div>
+  {/* Top welcome + weather */}
+  <div className="flex justify-between items-start">
+    <div>
+      <h1 className="text-4xl font-bold text-[#0C1D4F]">
+        Welcome to AcademiX!
+      </h1>
+      <p className="mt-4 text-3xl font-bold text-[#0C1D4F]">
+        Hey, {firstName}
+      </p>
+    </div>
+    <WeatherCard city="bihta" />
+  </div>
 
-          {/* Attendance cards (static mock) */}
-          <p className="mt-6 italic">
-            Never miss a beat—track your attendance with ease ✅
-          </p>
-          <AttendanceCards />
+  {/* Attendance cards (static mock) */}
+  <p className="mt-6 text-xl font-semibold text-[#0C1D4F] italic">
+    Attendance Tracker ✅
+  </p>
+  <AttendanceCards />
 
-          {/* Calendar CTA */}
-          <p className="mt-10 italic">
-            Stay ahead, Add Class to Calendar—No Stress! 📝
-          </p>
+  {/* Calendar CTA */}
+  <p className="mt-6 text-xl font-semibold text-[#0C1D4F] italic">
+    Struggling with Reminders? Integrate Google Calendar seamlessly. 📝
+  </p>
 
-          {!hasGoogleToken ? (
-        <button
-          onClick={handleGoogleConnect}
-          className="bg-[#00255A] rounded-xl px-6 py-3 text-lg mt-4 w-fit mx-auto text-white"
-        >
-          Connect Google Calendar
-        </button>
-      ) : (
-        <button
-          onClick={() => setShowAddClass(true)}
-          className="bg-[#00255A] rounded-xl px-6 py-3 text-lg mt-4 w-fit mx-auto text-white"
-        >
-          Add Class To Calendar
-        </button>
-          )}
-        </div>
-      );
-    }
+  <div className="flex justify-center">
+    {!hasGoogleToken ? (
+      <button
+        onClick={handleGoogleConnect}
+        className="bg-[#00255A] rounded-xl px-6 py-3 text-lg mt-4 text-white"
+      >
+        Connect Google Calendar
+      </button>
+    ) : (
+      <button
+        onClick={() => setShowAddClass(true)}
+        className="bg-[#00255A] rounded-xl px-6 py-3 text-lg mt-4 text-white"
+      >
+        Add Class To Calendar
+      </button>
+    )}
+  </div>
+</div>
+  );
+}
+
 
     /* ---------- Coding Profiles ---------- */
     if (activePage === "Coding Profiles") {
