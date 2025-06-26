@@ -4,9 +4,6 @@
 
 <p id="description">AcademiX is a dynamic full‑stack student dashboard built with Node.js Express Flask React and MongoDB enhanced by Python and dlib-powered facial recognition Cloudinary media storage Nodemailer for secure password recovery and styled with Tailwind CSS. It seamlessly integrates RESTful and GraphQL APIs features live weather updates and syncs class reminders with Google Calendar. Students can track attendance across over five subjects monitor coding performance from three platforms and securely store academic documents—all within one intelligent and responsive portal. This well-structured dashboard exemplifies modern best practices in e-learning platforms and dashboard design.</p>
 
-<h2>Project Screenshots:</h2>
-
-<img src="" alt="project-screenshot" width="400" height="400/">
 
 <h2>🛠️ Installation Steps:</h2>
 
