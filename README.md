@@ -5,24 +5,37 @@
 <p id="description">AcademiX is a dynamic full‑stack student dashboard built with Node.js Express Flask React and MongoDB enhanced by Python and dlib-powered facial recognition Cloudinary media storage Nodemailer for secure password recovery and styled with Tailwind CSS. It seamlessly integrates RESTful and GraphQL APIs features live weather updates and syncs class reminders with Google Calendar. Students can track attendance across over five subjects monitor coding performance from three platforms and securely store academic documents—all within one intelligent and responsive portal. This well-structured dashboard exemplifies modern best practices in e-learning platforms and dashboard design.</p>
 
 
-  
-<h2>💻 Built with</h2>
+## 💻 Built With
 
 Technologies used in the project:
 
-*   Node.js
-*   Express.js
-*   React.js
-*   MongoDB
-*   Flask
-*   Cloudinary
-*   Google Calendar API
-*   Python
-*   dlib
-*   Tailwind CSS
-*   Nodemailer
-*   RESTful APIs
-*   GraphQL APIs
+<table>
+  <tr>
+    <td><strong>Node.js</strong></td>
+    <td><strong>Express.js</strong></td>
+    <td><strong>React.js</strong></td>
+  </tr>
+  <tr>
+    <td><strong>MongoDB</strong></td>
+    <td><strong>Flask</strong></td>
+    <td><strong>Cloudinary</strong></td>
+  </tr>
+  <tr>
+    <td><strong>Google Calendar API</strong></td>
+    <td><strong>Python</strong></td>
+    <td><strong>dlib</strong></td>
+  </tr>
+  <tr>
+    <td><strong>Tailwind CSS</strong></td>
+    <td><strong>Nodemailer</strong></td>
+    <td><strong>RESTful APIs</strong></td>
+  </tr>
+  <tr>
+    <td><strong>GraphQL APIs</strong></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
 
 
 
