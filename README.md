@@ -107,7 +107,6 @@ cd../ML pip install -r requirements.txt python app.py
 http://localhost:3001
 ```
 
-<h2>🍰 Contributors :</h2>
 
   
 
