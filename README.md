@@ -1,3 +1,46 @@
+## 🔐 Environment Variables
+
+The backend server uses the following environment variables, which should be configured in a `.env` file at the root of the project:
+
+### 🗄️ Database
+- `MONGODB_URI` – MongoDB connection string (use your own MongoDB Atlas URI or local URI)
+
+### 🌐 Server Configuration
+- `PORT` – Main backend server port (e.g., 3000)
+- `PORT2` – Additional port (e.g., for testing/microservices)
+- `CORS_ORIGIN` – Allowed origin for CORS requests (`*` for public, or restrict to frontend URL)
+- `FRONTEND_ORIGIN` – Frontend application origin (used in cookies/CORS)
+
+### 🔑 JWT Authentication
+- `ACCESS_TOKEN_SECRET` – Secret key for generating JWT access tokens
+- `REFRESH_TOKEN_SECRET` – Secret key for generating JWT refresh tokens
+- `ACCESS_TOKEN_EXPIRY` – Expiry duration for access tokens (e.g., `15m`)
+- `REFRESH_TOKEN_EXPIRY` – Expiry duration for refresh tokens (e.g., `7d`)
+- `JWT` – Additional JWT secret (used for fallback or legacy purposes)
+
+### ☁️ Cloudinary (Image & File Storage)
+- `CLOUDINARY_CLOUD_NAME` – Cloudinary cloud name
+- `CLOUDINARY_API_KEY` – API key for Cloudinary
+- `CLOUDINARY_API_SECRET` – API secret for Cloudinary
+
+### 📧 Email Configuration (for password reset/OTP)
+- `EMAIL` – Sender Gmail address (used via Nodemailer)
+- `PASSWORD` – App password or SMTP password for the email account
+
+### 📅 Google Calendar API
+- `GOOGLE_API_KEY` – Google Cloud API Key
+- `GOOGLE_CLIENT_ID` – OAuth2 client ID from Google Cloud Console
+- `GOOGLE_CLIENT_SECRET` – OAuth2 client secret
+- `GOOGLE_REDIRECT_URI` – OAuth2 redirect URI (must match Google Cloud Console setting)
+
+---
+
+> ⚠️ **Important:** Never commit your `.env` file to version control (e.g., GitHub). Always add it to your `.gitignore`.
+
+
+
+
+
 ## 🌐 API Documentation
 
 ### 🔗 Base URL
