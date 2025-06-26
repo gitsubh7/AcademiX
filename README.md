@@ -1,3 +1,104 @@
+<h1 align="center" id="title">AcademiX</h1>
+
+<p align="center"><img src="https://socialify.git.ci/gitsubh7/AcademiX/image?description=1&amp;forks=1&amp;issues=1&amp;language=1&amp;name=1&amp;owner=1&amp;pattern=Plus&amp;pulls=1&amp;stargazers=1&amp;theme=Dark" alt="project-image"></p>
+
+<p id="description">AcademiX is a dynamic full‑stack student dashboard built with Node.js Express Flask React and MongoDB enhanced by Python and dlib-powered facial recognition Cloudinary media storage Nodemailer for secure password recovery and styled with Tailwind CSS. It seamlessly integrates RESTful and GraphQL APIs features live weather updates and syncs class reminders with Google Calendar. Students can track attendance across over five subjects monitor coding performance from three platforms and securely store academic documents—all within one intelligent and responsive portal. This well-structured dashboard exemplifies modern best practices in e-learning platforms and dashboard design.</p>
+
+<h2>Project Screenshots:</h2>
+
+<img src="" alt="project-screenshot" width="400" height="400/">
+
+<h2>🛠️ Installation Steps:</h2>
+
+<p>1. Clone Repository</p>
+
+```
+git clone https://github.com/gitsubh7/AcademiX.git 
+```
+
+<p>2. Enter into the Directory</p>
+
+```
+cd AcademiX
+```
+
+<p>3. Enter Backend</p>
+
+```
+cd Backend
+```
+
+<p>4. Install Backend Dependencies</p>
+
+```
+npm install 
+```
+
+<p>5. Enter Frontend</p>
+
+```
+cd ../Frontend
+```
+
+<p>6. Install Frontend Dependencies</p>
+
+```
+npm install
+```
+
+<p>7. Setup Environment Variables</p>
+
+```
+Refer in the next section
+```
+
+<p>8. Launch Backend</p>
+
+```
+npm run dev
+```
+
+<p>9. Launch Frontend</p>
+
+```
+npm run dev
+```
+
+<p>10. Setup ML Server</p>
+
+```
+cd../ML pip install -r requirements.txt python app.py
+```
+
+<p>11. Frontend URL</p>
+
+```
+http://localhost:3001
+```
+
+<h2>🍰 Contribution Guidelines:</h2>
+
+  
+  
+<h2>💻 Built with</h2>
+
+Technologies used in the project:
+
+*   Node.js
+*   Express.js
+*   React.js
+*   MongoDB
+*   Flask
+*   Cloudinary
+*   Google Calendar API
+*   Python
+*   dlib
+*   Tailwind CSS
+*   Nodemailer
+*   RESTful APIs
+*   GraphQL APIs
+
+
 ## 🔐 Environment Variables
 
 The backend server uses the following environment variables, which should be configured in a `.env` file at the root of the project:
@@ -164,3 +265,25 @@ The backend server uses the following environment variables, which should be con
 
 - `GET /weather/bihta`  
   Get real-time weather details for Bihta.
+
+
+
+## 🖼️ Project Screenshots
+
+### 🔐 Home Page
+![Login](./assets/screenshots/login.png)
+
+### 📊 Signup View
+![Dashboard](./assets/screenshots/dashboard.png)
+
+### 📝 Coding Profiles
+![Attendance](./assets/screenshots/attendance.png)
+
+![Attendance](./assets/screenshots/attendance.png)
+
+### 📝 User Profiles
+![Attendance](./assets/screenshots/attendance.png)
+
+### 📝 Documents
+![Attendance](./assets/screenshots/attendance.png)
+
