@@ -68,7 +68,8 @@ npm install
 <p>5. Enter Frontend</p>
 
 ```
-cd ../Frontend
+cd ..
+cd Frontend
 ```
 
 <p>6. Install Frontend Dependencies</p>
@@ -77,7 +78,7 @@ cd ../Frontend
 npm install
 ```
 
-<p>7. Setup Environment Variables</p>
+<p>7. Setup Environment Variables ( create same .env in ML folder and Backend Folder)</p>
 
 ```
 Refer in the next section
@@ -86,22 +87,28 @@ Refer in the next section
 <p>8. Launch Backend</p>
 
 ```
+cd ..
+cd Backend
 npm run dev
 ```
 
 <p>9. Launch Frontend</p>
 
 ```
+cd ..
+cd Frontend
 npm run dev
 ```
 
 <p>10. Setup ML Server</p>
 
 ```
-cd../ML pip install -r requirements.txt python app.py
+cd .. 
+pip install -r requirements.tx
+python app.py
 ```
 
-<p>11. Frontend URL</p>
+<p> 🌍 Frontend URL </p>
 
 ```
 http://localhost:3001
