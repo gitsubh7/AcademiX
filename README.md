@@ -302,7 +302,7 @@ The backend server uses the following environment variables, which should be con
 
 ### 📝 Add Class to Google Calendar
 ![Doument](Frontend/src/assets/screenshots/addClass1.jpeg)
-![Doument](Frontend/src/assets/screenshots/adddlass3.jpeg)
+![Doument](Frontend/src/assets/screenshots/addclass3.jpeg)
 
 
 ### 📝 User Profile
