@@ -1,6 +1,9 @@
 <h1 align="center" id="title">AcademiX</h1>
 
-<p align="center"><img src="https://socialify.git.ci/gitsubh7/AcademiX/image?description=1&amp;forks=1&amp;issues=1&amp;language=1&amp;name=1&amp;owner=1&amp;pattern=Plus&amp;pulls=1&amp;stargazers=1&amp;theme=Dark" alt="project-image"></p>
+<p align="center">
+  <img src="Frontend/src/assets/screenshots/dashboard.png" alt="Dashboard Screenshot" width="1400"/>
+</p>
+
 
 <p id="description">AcademiX is a dynamic full‑stack student dashboard built with Node.js Express Flask React and MongoDB enhanced by Python and dlib-powered facial recognition Cloudinary media storage Nodemailer for secure password recovery and styled with Tailwind CSS. It seamlessly integrates RESTful and GraphQL APIs features live weather updates and syncs class reminders with Google Calendar. Students can track attendance across over five subjects monitor coding performance from three platforms and securely store academic documents—all within one intelligent and responsive portal. This well-structured dashboard exemplifies modern best practices in e-learning platforms and dashboard design.</p>
 
@@ -104,8 +107,8 @@ npm run dev
 
 ```
 cd .. 
-pip install -r requirements.tx
-python app.py
+pip install -r requirements.txt
+python face_recog.py
 ```
 
 <p> 🌍 Frontend URL </p>
@@ -289,22 +292,24 @@ The backend server uses the following environment variables, which should be con
 
 ## 🖼️ Project Screenshots
 
-### 🔐 Home Page
-![Login](./assets/screenshots/login.png)
+
 
 ### 📊 Signup View
-![Dashboard](./assets/screenshots/dashboard.png)
+![Signup](Frontend/src/assets/screenshots/signup.png)
 
 ### 📝 Coding Profiles
-![Attendance](./assets/screenshots/attendance.png)
+![Coding1](Frontend/src/assets/screenshots/Codingprofiles1.png)
 
-![Attendance](./assets/screenshots/attendance.png)
+### 📝 Add Class to Google Calendar
+![Doument](Frontend/src/assets/screenshots/addClass1.jpeg)
+![Doument](Frontend/src/assets/screenshots/addclass3.jpeg)
 
-### 📝 User Profiles
-![Attendance](./assets/screenshots/attendance.png)
+
+### 📝 User Profile
+![Attendance](Frontend/src/assets/screenshots/UserProfile.png)
 
 ### 📝 Documents
-![Attendance](./assets/screenshots/attendance.png)
+![Doument](Frontend/src/assets/screenshots/Documents.png)
 
 
 
