@@ -4,15 +4,27 @@ import cors from "cors";
 import {studentRouter} from "../src/routes/student.route.js"
 import { weatherRouter } from "../src/routes/weather.route.js"
 
+const allowedOrigins = [
+  "http://localhost:3001",                // Local dev
+  "https://academixfrontend.vercel.app"   // Vercel frontend
+];
+
+
 export const app =express();
 
 app.use(cookieParser());
 app.use(express.json({limit: "30mb", extended: true}));
 app.use(express.urlencoded({limit: "30mb", extended: true}));
+
 app.use(cors({
-    origin: 'http://localhost:3001',
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
 }));
 app.use(express.static("public"))
 
