@@ -48,7 +48,8 @@ const SignUp = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/api/v1/student/register",
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/register`
+,
         formData            // let axios add the multipart boundary
       );
       navigate("/login");

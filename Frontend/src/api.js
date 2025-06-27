@@ -6,7 +6,8 @@ import { getAccessToken, getRefreshToken } from "./utils/auth";
    1. Axios instance with your back‑end base URL
    ------------------------------------------------- */
 export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1/student", // adjust if you mount router elsewhere
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api/v1/student`,
+ // adjust if you mount router elsewhere
   withCredentials: true, 
 });
 

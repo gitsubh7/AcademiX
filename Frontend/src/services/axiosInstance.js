@@ -3,8 +3,9 @@ import axios from "axios";
 import { getAccessToken } from "../utils/auth";      // ←  already in utils
 
 export const axiosSecure = axios.create({
-  baseURL: "http://localhost:3000/api" || "/api",
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
 });
+
 
 axiosSecure.interceptors.request.use((config) => {
   const token = getAccessToken();

@@ -129,7 +129,7 @@ const AddClassForm = ({ onClose, onTokenExpired }) => {
 
       /* POST to backend */
       const resp = await axios.post(
-        "http://localhost:3000/api/v1/student/addClass",
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/addClass`,
         { ...form, start_time: startISO, end_time: endISO },
         { headers }
       );
@@ -298,7 +298,7 @@ const firstName = userData?.name?.split(" ")[0] || "there";
       setError(null);
       setSuccess(null);
 
-      const res = await fetch("http://localhost:3000/api/v1/student/uploadDocument", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/student/uploadDocument`, {
         method: "POST",
         credentials: "include",
         body: formData,
@@ -325,7 +325,7 @@ const fetchDocuments = async () => {
     setLoading(true);
 
     const res = await fetch(
-      "http://localhost:3000/api/v1/student/getAllDocuments",
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/getAllDocuments`,
       { credentials: "include" }
     );
 
@@ -358,7 +358,7 @@ const handleDelete = async (docId) => {
 
   try {
     const res = await fetch(
-      `http://localhost:3000/api/v1/student/deleteDocument/${docId}`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/deleteDocument/${docId}`,
       {
         method: "DELETE",
         credentials: "include",
@@ -387,7 +387,7 @@ const handleDelete = async (docId) => {
   /* ---------------------------------------------------------------------- */
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/v1/student/logout", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/student/logout`, {
         method: "POST",
         credentials: "include",
       });

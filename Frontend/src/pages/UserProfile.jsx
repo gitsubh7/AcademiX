@@ -48,7 +48,8 @@ const UserProfile = () => {
     if (token) {
       try {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        const { data } = await axios.get("http://localhost:3000/api/v1/student/getStudent");
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/student/getStudent`
+);
         const freshUser = data?.data?.student;
 
         if (freshUser && freshUser.name) {
@@ -81,7 +82,8 @@ const UserProfile = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/student/updateProfileImage",
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/updateProfileImage`
+,
         formData,
         {
           headers: {

@@ -8,7 +8,8 @@
 export function startGoogleLogin() {
   /* 1️⃣  The backend route that builds the Google‑Auth URL
          – update if your route prefix changes */
-  const popupURL = "http://localhost:3000/api/v1/student/google";
+  const popupURL = `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/google`;
+
 
   /* 2️⃣  Centre the popup window */
   const w = 500, h = 600;
