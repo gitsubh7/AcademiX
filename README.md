@@ -299,6 +299,7 @@ The backend server uses the following environment variables, which should be con
 
 ### 📝 Coding Profiles
 ![Coding1](Frontend/src/assets/screenshots/Codingprofiles1.png)
+![Coding2](Frontend/src/assets/screenshots/Codingprofiles.jpeg)
 
 ### 📝 Add Class to Google Calendar
 ![Doument](Frontend/src/assets/screenshots/addClass1.jpeg)
