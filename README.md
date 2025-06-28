@@ -319,3 +319,35 @@ The backend server uses the following environment variables, which should be con
 - [**Abdul Subhan**](https://github.com/gitsubh7)
 - [**Anjali Rani**](https://github.com/Anjali28082003)
 
+
+## 🚀 Deployment on Vercel
+
+The frontend of AcademiX is deployed using Vercel and connects to the backend hosted on Render.
+
+🔗 Live Site:  
+👉 https://academixfrontend.vercel.app
+
+You can explore all major features in the live version including Google Calendar integration, document storage, attendance tracking, and coding profile visualization.
+
+---
+
+### 🧩 Frontend Deployment (Vercel)
+
+AcademiX uses Vite + React for the frontend. When deploying on Vercel, make sure to:
+
+✅ Add the following environment variable in Vercel (Project → Settings → Environment Variables):
+
+| Variable           | Value                                              |
+|--------------------|----------------------------------------------------|
+| VITE_BACKEND_URL   | https://academix-c70l.onrender.com                 |
+
+✅ Create a vercel.json file in your /Frontend directory to enable proper client-side routing:
+
+📁 Frontend/vercel.json:
+
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}
