@@ -6,7 +6,7 @@ import { weatherRouter } from "../src/routes/weather.route.js"
 
 const allowedOrigins = [
   "http://localhost:3001",                // Local dev
-  "https://academixfrontend.vercel.app"   // Vercel frontend
+  "https://academixportal.vercel.app"   // Vercel frontend
 ];
 
 
