@@ -11,6 +11,9 @@ export default defineConfig({
     strictPort: true,
     open: true
   },
+  build: {
+    outDir: 'dist'
+  },
   css: {
     postcss: {
       plugins: [
