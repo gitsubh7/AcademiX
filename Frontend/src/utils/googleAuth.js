@@ -28,7 +28,7 @@ export function startGoogleLogin() {
 
   /* 3️⃣  Listen for the tokens sent from redirectGoogleAuth */
   return new Promise((resolve, reject) => {
-    const expectedOrigin = "http://localhost:3000";   // ← must match backend
+    const expectedOrigin = import.meta.env.VITE_BACKEND_URL;   // ← must match backend
 
     const timeout = setTimeout(() => {
       cleanup();
