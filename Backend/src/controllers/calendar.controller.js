@@ -37,7 +37,7 @@ export const redirectGoogleAuth = asyncHandler(async (req, res) => {
   // Send tokens to frontend
   const html = `
     <script>
-      window.opener.postMessage(${JSON.stringify(tokens)}, "http://localhost:3001");
+      window.opener.postMessage(${JSON.stringify(tokens)}, "https://academixportal.vercel.app");
       window.close();
     </script>
   `;
