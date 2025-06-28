@@ -114,6 +114,7 @@ python face_recog.py
 <p> 🌍 Frontend URL </p>
 
 ```
+https://academixportal.vercel.app
 http://localhost:3001
 ```
 
@@ -168,6 +169,7 @@ The backend server uses the following environment variables, which should be con
 
 ### 🔗 Base URL
 - `http://localhost:3000/api/v1`
+- `https://academixportal.vercel.app/api/v1`
 
 ---
 
