@@ -4,26 +4,39 @@ FROM python:3.10-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set work directory
+# Set working directory
 WORKDIR /app
 
-# Install only what's needed for lightweight builds
-RUN apt-get update && \
-    apt-get install -y libglib2.0-0 libsm6 libxrender1 libxext6 && \
-    rm -rf /var/lib/apt/lists/*
+# Install OS-level dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    libopenblas-dev \
+    liblapack-dev \
+    libx11-dev \
+    libgtk-3-dev \
+    libboost-all-dev \
+    libatlas-base-dev \
+    libssl-dev \
+    wget \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy only requirements first
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Copy requirements first to leverage Docker caching
 COPY requirements.txt .
 
-# Replace opencv-python with opencv-python-headless in requirements.txt BEFORE THIS STEP
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Now copy the rest of the app
+# Copy the full app code
 COPY . .
 
-# Expose the app port
+# Expose port (used in Flask or gunicorn)
 EXPOSE 8000
 
-# Run the app
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "face_recog:app"]
+# Run the Flask app directly (dev use)
+CMD ["python3", "face_recog.py"]
