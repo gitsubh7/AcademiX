@@ -58,7 +58,7 @@ export const getCodeforcesProfile=asyncHandler(async(req,res,next)=>{
   }
   const studentId = req.user._id;
   const student = await Student.findById(studentId);
-  // create a leetcode database if user data doesnt exist
+
   const existingProfile = await Coding.findOne({ roll_number: student.roll_number, platform: "codeforces" });
   if (existingProfile) {
     // Update the existing profile
