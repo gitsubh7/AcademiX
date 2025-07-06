@@ -1,6 +1,5 @@
-// -----------------------------------------------------------------------------
+
 // AcademiXDashboard.jsx
-// -----------------------------------------------------------------------------
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -16,19 +15,15 @@ import { useUserContext } from "../context/userContext.jsx";
 import AttendanceCards from "../pages/AttendanceCards";
 import { getDocId } from '../utils/getDocId';
 
-/* -------------------------------------------------------------------------- */
-/*  SMALL REUSABLE BUTTON                                                     */
-/* -------------------------------------------------------------------------- */
-// Button.jsx
+
 const Button = ({
   children,
   className = "",
   onClick,
   type = "button",
   disabled = false,
-  active = false,          // NEW:  is this the currently-selected button?
+  active = false,          
 }) => {
-  /* base colours */
   const idleClasses   = "bg-[#0C1D4F] text-white hover:bg-[#AAD0E9] hover:text-black";
   const activeClasses = "bg-[#AAD0E9] text-black";
 
@@ -68,9 +63,9 @@ const clearClientStorage = () => {
   localStorage.removeItem("codingProfiles.usernames");
 };
 
-/* -------------------------------------------------------------------------- */
+
 /*  ADD‑CLASS MODAL                                                           */
-/* -------------------------------------------------------------------------- */
+
 const AddClassForm = ({ onClose, onTokenExpired }) => {
   const [form, setForm] = useState({
     subject_name: "",
@@ -126,8 +121,6 @@ const AddClassForm = ({ onClose, onTokenExpired }) => {
       const headers = { Authorization: `Bearer ${getAccessToken()}` };
       const rToken = getRefreshToken();
       if (rToken) headers["x-refresh-token"] = rToken;
-
-      /* POST to backend */
       const resp = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/addClass`,
         { ...form, start_time: startISO, end_time: endISO },
@@ -232,9 +225,8 @@ const AddClassForm = ({ onClose, onTokenExpired }) => {
 
 /* -------------------------------------------------------------------------- */
 /*  MAIN DASHBOARD                                                            */
-/* -------------------------------------------------------------------------- */
 const AcademiXDashboard = () => {
-  /* ------------ state ------------ */
+ 
   const [activePage, setActivePage] = useState("Dashboard");
   const [showAddClass, setShowAddClass] = useState(false);
   const [showDocuments, setShowDocuments] = useState(false);
@@ -309,8 +301,6 @@ const firstName = userData?.name?.split(" ")[0] || "there";
       setFile(null);
       fetchDocuments();
        setSuccess("Document uploaded successfully ✅");
-
-    // hide after 3 seconds
     setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message || "Upload failed");
@@ -318,8 +308,6 @@ const firstName = userData?.name?.split(" ")[0] || "there";
       setLoading(false);
     }
   };
-
- // inside the component that loads docs
 const fetchDocuments = async () => {
   try {
     setLoading(true);
@@ -330,24 +318,23 @@ const fetchDocuments = async () => {
     );
 
     if (!res.ok) {
-      // 401, 500, 404 … – surface a *real* error instead of poisoning state
       const { message = "Failed to fetch documents" } = await res.json();
       throw new Error(message);
     }
 
-    const { message } = await res.json();           // message holds the object
-setDocuments(message?.documents ?? []);      // ⇠ *always* an array
+    const { message } = await res.json();          
+setDocuments(message?.documents ?? []);     
   } catch (err) {
     console.error(err);
     setError(err.message);
-    setDocuments([]);                      // keep UI alive
+    setDocuments([]);                      
   } finally {
     setLoading(false);
   }
 };
 
 
-  // src/components/DocsList.jsx (or wherever)
+ 
 const handleDelete = async (docId) => {
   if (!docId) return setError("No document id found");
 
@@ -371,7 +358,6 @@ const handleDelete = async (docId) => {
       throw new Error(payload.message || "Failed to delete document");
     }
 
-    // Success — nothing to do; document is already removed from UI
 
   } catch (err) {
     // Roll back only if it failed
@@ -400,9 +386,6 @@ const handleDelete = async (docId) => {
     }
   };
 
-  /* ---------------------------------------------------------------------- */
-  /*  UTIL – file icon                                                      */
-  /* ---------------------------------------------------------------------- */
   const getFileIcon = (filename) => {
     const ext = filename.split(".").pop().toLowerCase();
     const icons = {
@@ -642,7 +625,7 @@ const handleDelete = async (docId) => {
   <div>
     {/* Logo and Title */}
     <div className="flex items-center gap-4 mb-8">
-  {/* A + X overlapping compact logo */}
+  {}
   <div className="relative w-9 h-9">
     <img
       src={A}
