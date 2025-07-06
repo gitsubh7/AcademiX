@@ -9,7 +9,7 @@ const SignUp = () => {
   const navigate = useNavigate();
   const { userState, handlerUserInput, resetUserState } = useUserContext();
 
-  /** 🔹 NEW: keep the real File locally */
+  
   const [photoFile, setPhotoFile]   = useState(null);
   const [photoPreview, setPreview]  = useState(null);
 
@@ -19,13 +19,13 @@ const SignUp = () => {
   const {
     name, email, degree, department, section, password,
     roll_number, bio, year, passout_year, phone_number,
-    subjects_enrolled                       // keep as comma list in context
+    subjects_enrolled                      
   } = userState;
 
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
 
-  /* -----------------------------  SUBMIT  ----------------------------- */
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -50,7 +50,7 @@ const SignUp = () => {
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/register`
 ,
-        formData            // let axios add the multipart boundary
+        formData            
       );
       navigate("/login");
     } catch (err) {
@@ -63,14 +63,14 @@ const SignUp = () => {
     "border border-white/30 rounded-md px-4 py-2 " +
     "focus:outline-none focus:border-white/70 focus:ring-2 focus:ring-white/60";
 
-  /* same but with extra right padding for the eye icon */
+
   const pwdInput = baseInput + " pr-10";
 
-  /* dropdown classes */
+  
   const selectInput =
     baseInput + " appearance-none pr-10";
 
-  /* inline SVG arrow in white for <select> */
+
   const whiteArrow = {
     backgroundImage:
       "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E\")",
@@ -280,20 +280,17 @@ const SignUp = () => {
         </form>
       </div>
 
-      {/* -------------------- RIGHT / ILLUSTRATION SIDE -------------------- */}
+      {}
      <div className="hidden md:flex md:w-1/2 bg-[#B3D4F1] flex-col justify-center items-center text-[#00255A] p-10 relative">
   {/* Logo in top-right */}
   <img src={logo} alt="logo" className="absolute top-8 right-8 w-20" />
 
-  {/* Horizontally centered, vertically same as before */}
+  
   <h1 className="text-5xl lg:text-7xl font-bold absolute top-20 left-1/2 transform -translate-x-1/2 text-center">
     Welcome to AcademiX!
   </h1>
-
-  {/* Uplifted image */}
   <img src={v2} alt="students" className="w-2/3 mt-2" />
 </div>
-
 
     </div>
   );

@@ -1,8 +1,3 @@
-// src/services/weatherService.js
-// src/services/weatherService.js
-// -------------------------------------------------
-// Simple helper for fetching weather from your backend
-// -------------------------------------------------
 
 /**
  * Fetch live weather for a city.
@@ -16,16 +11,9 @@ export async function getWeather(city = "bihta") {
 
 
   if (!res.ok) {
-    // Bubble up a readable error message
     const { message } = await res.json().catch(() => ({}));
     throw new Error(message || "Unable to fetch weather");
   }
-
-  /**
-   * Your backend wraps the useful data inside:
-   * { statusCode, data: "Data fetched successfully", message: { …actualWeather } }
-   * So we need the `.message` field.
-   */
   const payload = await res.json();
-  return payload.message; // { city, temperature, time, weathercode }
+  return payload.message; 
 }

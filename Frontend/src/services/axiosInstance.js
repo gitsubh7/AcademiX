@@ -1,6 +1,6 @@
-// src/services/axiosInstance.js
+
 import axios from "axios";
-import { getAccessToken } from "../utils/auth";      // ←  already in utils
+import { getAccessToken } from "../utils/auth";      
 
 export const axiosSecure = axios.create({
   baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,

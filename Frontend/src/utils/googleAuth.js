@@ -1,13 +1,8 @@
-// utils/googleAuth.js
-// src/utils/googleAuth.js
-// -----------------------------------------------------------------------------
-//  src/utils/googleAuth.js
-//  Launches Google‑OAuth popup via your backend and resolves with the tokens
-// -----------------------------------------------------------------------------
+
 
 export function startGoogleLogin() {
   /* 1️⃣  The backend route that builds the Google‑Auth URL
-         – update if your route prefix changes */
+     */
   const popupURL = `${import.meta.env.VITE_BACKEND_URL}/api/v1/student/google`;
 
 

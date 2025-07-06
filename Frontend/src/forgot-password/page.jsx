@@ -10,10 +10,10 @@ const ForgotPass = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Remove TypeScript syntax (React.ChangeEvent) for pure JSX file
+  
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
-    setError(""); // Clear error when user types
+    setError(""); 
   };
 
   const handleSubmit = async (e) => {

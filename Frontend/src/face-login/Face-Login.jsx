@@ -47,7 +47,6 @@ const FaceLogin = () => {
       const data = await response.json();
       if (response.ok) {
         setMessage(`✅ ${data.message || 'Login successful'}`);
-        // You can also navigate to dashboard or home here
         setTimeout(() => {
     navigate('/home');
   }, 1500); 

@@ -4,7 +4,6 @@ import { fetchLeetCode, fetchGitHub, fetchCodeforces ,getLeetRankByQuestions,
   getLeetRankByRating,
   getCFRankings } from "../api";
   import { RefreshCw } from "lucide-react";  
-// … your logo imports
 import Leet from "../assets/Leet.png";
 import Gitlogo from"../assets/Gitlogo.jpeg";
 import Code from "../assets/Code.png";
@@ -45,7 +44,6 @@ const loadUsernames = () => {
  const [usernames, setUsernames] = useState(loadUsernames());
 
     
-  /** fetch on demand, per‑platform ------------------------------------- */
   const handleFetch = useCallback(async platform => {
     const username = usernames[platform];
     if (!username) return;
@@ -66,7 +64,7 @@ const loadUsernames = () => {
       }
     } catch (err) {
       console.error(err);
-      // optional: surface “username not found” or auth error here
+    
     } finally {
       setLoading(prev => ({ ...prev, [platform]: false }));
     }
@@ -96,14 +94,14 @@ const loadUsernames = () => {
   const updateName = (platform, value) => {
   setUsernames((prev) => {
     const next = { ...prev, [platform]: value };
-    saveUsernames(next);          // 👈 write to storage
+    saveUsernames(next);          
     return next;
   });
 };
   const symbolForRank = (idx) =>
     idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
 
-  /** ------------------------------------------------------------------- */
+  
   useEffect(() => {
   (async () => {
     try {
@@ -126,7 +124,7 @@ useEffect(() => {
   ["LeetCode", "GitHub", "Codeforces"].forEach((p) => {
     if (usernames[p]) handleFetch(p);
   });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+ 
 }, []);   
 
   return (

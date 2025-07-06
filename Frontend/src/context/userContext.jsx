@@ -5,9 +5,6 @@ import toast from "react-hot-toast";
 
 axios.defaults.withCredentials = true;
 
-/* ─────────────────────────────
-   SHAPES & HELPERS
-─────────────────────────────*/
 const EMPTY_FORM = {
   name: "",
   email: "",
@@ -20,14 +17,11 @@ const EMPTY_FORM = {
   year: "",
   passout_year: "",
   phone_number: "",
-  subjects_enrolled: "", // ← comma‑separated string in the form
-  image_url: "",          // ← File | string (URL)
+  subjects_enrolled: "",
+  image_url: "",       
 };
 
-/**
- * Normalise any shape of subjects coming back from the backend into
- *   subjects: [{ code, name }]
- */
+
 const normaliseSubjects = (raw) => {
   if (!raw) return [];
 
@@ -45,9 +39,7 @@ const normaliseSubjects = (raw) => {
   return [];
 };
 
-/* ─────────────────────────────
-   CONTEXT SETUP
-─────────────────────────────*/
+
 const UserContext = createContext();
 
 export const UserContextProvider = ({ children }) => {
@@ -58,7 +50,7 @@ export const UserContextProvider = ({ children }) => {
 
   /* ------- state --------- */
   const [loading, setLoading]     = useState(false);
-  const [formState, setFormState] = useState(EMPTY_FORM); // form fields only
+  const [formState, setFormState] = useState(EMPTY_FORM); 
   const [currentUser, setCurrentUser] = useState(() => {
     const cached = localStorage.getItem("academixUser");
     if (!cached || cached === "undefined") return null;
@@ -241,9 +233,6 @@ export const UserContextProvider = ({ children }) => {
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
-  /* ─────────────────────────────
-     UTILITIES
-  ──────────────────────────────*/
   const resetUserState = () => {
     setFormState(EMPTY_FORM);
   };
@@ -274,7 +263,4 @@ export const UserContextProvider = ({ children }) => {
   );
 };
 
-/* ─────────────────────────────
-   HOOK
-─────────────────────────────*/
 export const useUserContext = () => useContext(UserContext);
