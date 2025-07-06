@@ -32,7 +32,7 @@ export default function AttendanceCards() {
   const [records, setRecords] = useState([]);
   const [showAdder, setShowAdder] = useState(false);
   const [courseCode, setCourseCode] = useState("");
-  const [editTarget, setEditTarget] = useState(null);  // old code or null
+  const [editTarget, setEditTarget] = useState(null); 
    const [newCourseCode, setNewCourseCode] = useState("");
 
   /* ─────────────── Fetch attendance on mount ─────────────── */
@@ -60,7 +60,6 @@ export default function AttendanceCards() {
     })();
   }, [rollNum, enrolled]);
 
-  /* ─────────────── Utilities ─────────────── */
   const updateOne = (updated) =>
     setRecords((prev) =>
       prev.map((r) =>
@@ -124,7 +123,6 @@ export default function AttendanceCards() {
   const trimmed = newCourseCode.trim().toUpperCase();
   if (!trimmed || trimmed === editTarget) return;
 
-  // optimistic UI update
   setRecords((prev) =>
     prev.map((r) =>
       r.subject_code === editTarget
@@ -176,7 +174,6 @@ export default function AttendanceCards() {
     }
   };
 
-  /* ─────────────── JSX ─────────────── */
   return (
     <>
       {/* Chart wrapper */}
