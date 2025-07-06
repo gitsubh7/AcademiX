@@ -5,7 +5,7 @@ import { useUserContext } from "../context/userContext.jsx";
 import placeholder from "../assets/placeholder-avatar.png";
 import { EditProfileForm, ChangePasswordForm } from "./Profile";
 import Dialog from "../components/Dialog";
- // Check spelling: this file must exist
+
 
 const UserProfile = () => {
   const { userState, setUserState } = useUserContext();
