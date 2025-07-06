@@ -1,4 +1,4 @@
-// src/components/Button.jsx
+
 import { forwardRef } from "react";
 
 export const Button = forwardRef(({ className = "", ...props }, ref) => (
