@@ -1,13 +1,11 @@
-/* ─────────── src/pages/ProfileDialogs.jsx ─────────── */
+
 import { useState, useEffect } from "react";
 import { useUserContext } from "../context/userContext";
 import { updateProfile, changePassword } from "../services/studentApi";
 import { Button } from "../components/Button";
 import toast from "react-hot-toast";
 
-/* -------------------------------------------------- */
-/*  1) Edit‑Profile dialog body                       */
-/* -------------------------------------------------- */
+
 export function EditProfileForm({ onSuccess }) {
   const { userState, setUserState } = useUserContext();
   const profile = userState.user || {};
@@ -31,7 +29,6 @@ export function EditProfileForm({ onSuccess }) {
     }
   };
 
-  /* minimal form – add fields as required */
   return (
     <>
       <input
@@ -133,9 +130,7 @@ export function EditProfileForm({ onSuccess }) {
   );
 }
 
-/* -------------------------------------------------- */
-/*  2) Change‑Password dialog body                    */
-/* -------------------------------------------------- */
+
 export function ChangePasswordForm({ onSuccess }) {
   const [pwdForm, setPwdForm] = useState({
     old_password: "",
