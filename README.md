@@ -328,7 +328,7 @@ The backend server uses the following environment variables, which should be con
 The frontend of AcademiX is deployed using Vercel and connects to the backend hosted on Render.
 
 🔗 Live Site:  
-👉 https://academixfrontend.vercel.app
+👉 https://academixportal.vercel.app/
 
 You can explore all major features in the live version including Google Calendar integration, document storage, attendance tracking, and coding profile visualization.
 
