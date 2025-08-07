@@ -321,6 +321,7 @@ The backend server uses the following environment variables, which should be con
 
 - [**Abdul Subhan**](https://github.com/gitsubh7)
 - [**Anjali Rani**](https://github.com/Anjali28082003)
+- [**Maithilee Pardhi**](https://github.com/maithilee24)
 
 
 ## 🚀 Deployment on Vercel
